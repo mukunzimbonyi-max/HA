@@ -43,7 +43,7 @@ const LanguageSelection = () => {
       <div style={{ position: 'absolute', top: '20px', right: '20px', zIndex: 1000 }}>
         <ThemeToggle />
       </div>
-      {/* YouTube Video Background */}
+      {/* Animated Nature Background */}
       <div style={{
         position: 'absolute',
         top: 0,
@@ -51,26 +51,81 @@ const LanguageSelection = () => {
         width: '100%',
         height: '100%',
         zIndex: -1,
-        pointerEvents: 'none',
-        overflow: 'hidden'
+        overflow: 'hidden',
+        backgroundColor: '#0a2e1f' // Dark green fallback
       }}>
-        <iframe 
-          style={{
-            width: '100vw',
-            height: '56.25vw', /* 16:9 Aspect Ratio */
-            minHeight: '100vh',
-            minWidth: '177.77vh', /* Maintain 16:9 */
-            position: 'absolute',
-            top: '50%',
-            left: '50%',
-            transform: 'translate(-50%, -50%)',
-            filter: 'brightness(0.4) contrast(1.1)'
+        {/* Main Background Image with Ken Burns Effect */}
+        <motion.div
+          animate={{
+            scale: [1, 1.1, 1],
+            rotate: [0, 1, 0]
           }}
-          src="https://www.youtube.com/embed/y9qIHCc4B9E?autoplay=1&mute=1&controls=0&loop=1&playlist=y9qIHCc4B9E&showinfo=0&rel=0&modestbranding=1" 
-          frameBorder="0" 
-          allow="autoplay; encrypted-media" 
-          allowFullScreen
-        ></iframe>
+          transition={{
+            duration: 20,
+            repeat: Infinity,
+            ease: "easeInOut"
+          }}
+          style={{
+            position: 'absolute',
+            top: '-5%',
+            left: '-5%',
+            width: '110%',
+            height: '110%',
+            backgroundImage: 'url("/assets/doctor_youth_nature.png")',
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            filter: 'brightness(0.6) contrast(1.1)'
+          }}
+        />
+
+        {/* Animated Nature Elements - Floating Leaves/Particles */}
+        {[...Array(15)].map((_, i) => (
+          <motion.div
+            key={i}
+            initial={{ 
+              x: Math.random() * 100 + 'vw', 
+              y: '110vh', 
+              opacity: 0,
+              rotate: Math.random() * 360
+            }}
+            animate={{ 
+              y: '-10vh',
+              opacity: [0, 0.5, 0],
+              x: (Math.random() * 100 - 50) + 'vw',
+              rotate: Math.random() * 720
+            }}
+            transition={{ 
+              duration: 10 + Math.random() * 15,
+              repeat: Infinity,
+              delay: Math.random() * 20,
+              ease: "linear"
+            }}
+            style={{
+              position: 'absolute',
+              width: Math.random() * 15 + 5 + 'px',
+              height: Math.random() * 15 + 5 + 'px',
+              background: i % 2 === 0 ? 'rgba(255, 255, 255, 0.3)' : 'rgba(144, 238, 144, 0.4)',
+              borderRadius: '50%',
+              filter: 'blur(2px)',
+              pointerEvents: 'none'
+            }}
+          />
+        ))}
+
+        {/* Soft Sunlight Overlay */}
+        <motion.div 
+          animate={{ opacity: [0.2, 0.4, 0.2] }}
+          transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
+          style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            width: '100%',
+            height: '100%',
+            background: 'radial-gradient(circle at 20% 20%, rgba(255, 255, 200, 0.15) 0%, transparent 50%)',
+            pointerEvents: 'none'
+          }}
+        />
       </div>
 
       <motion.div 
