@@ -2,6 +2,15 @@ const express = require('express');
 const router = express.Router();
 const db = require('../db');
 
+const cloudinary = require('cloudinary').v2;
+
+// Configure Cloudinary
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET
+});
+
 // Get all updates
 router.get('/', async (req, res) => {
   try {
@@ -18,8 +27,17 @@ router.get('/', async (req, res) => {
 
 // Add new update
 router.post('/', async (req, res) => {
-  const { title, content, file_url } = req.body;
+  let { title, content, file_url } = req.body;
+  
   try {
+    // If file_url is base64, upload to cloudinary
+    if (file_url && file_url.startsWith('data:')) {
+      const uploadRes = await cloudinary.uploader.upload(file_url, {
+        folder: 'ha_updates'
+      });
+      file_url = uploadRes.secure_url;
+    }
+
     const result = await db.query(
       'INSERT INTO updates (title, content, file_url) VALUES ($1, $2, $3) RETURNING *',
       [title, content, file_url]
@@ -34,8 +52,17 @@ router.post('/', async (req, res) => {
 // Update news entry
 router.put('/:id', async (req, res) => {
   const { id } = req.params;
-  const { title, content, file_url } = req.body;
+  let { title, content, file_url } = req.body;
+  
   try {
+    // If file_url is base64, upload to cloudinary
+    if (file_url && file_url.startsWith('data:')) {
+      const uploadRes = await cloudinary.uploader.upload(file_url, {
+        folder: 'ha_updates'
+      });
+      file_url = uploadRes.secure_url;
+    }
+
     const result = await db.query(
       'UPDATE updates SET title=$1, content=$2, file_url=$3 WHERE id=$4 RETURNING *',
       [title, content, file_url, id]

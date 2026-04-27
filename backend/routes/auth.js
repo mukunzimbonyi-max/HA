@@ -4,14 +4,23 @@ const db = require('../db');
 const multer = require('multer');
 const path = require('path');
 
-// Configure multer for file uploads
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, 'uploads/');
+const cloudinary = require('cloudinary').v2;
+const { CloudinaryStorage } = require('multer-storage-cloudinary');
+
+// Configure Cloudinary
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET
+});
+
+// Configure multer for Cloudinary uploads
+const storage = new CloudinaryStorage({
+  cloudinary: cloudinary,
+  params: {
+    folder: 'ha_profiles',
+    allowed_formats: ['jpg', 'png', 'jpeg'],
   },
-  filename: (req, file, cb) => {
-    cb(null, Date.now() + path.extname(file.originalname));
-  }
 });
 
 const upload = multer({ storage: storage });
@@ -19,7 +28,7 @@ const upload = multer({ storage: storage });
 // Signup
 router.post('/signup', upload.single('profile_picture'), async (req, res) => {
   const { username, email, password, role } = req.body;
-  const profile_picture = req.file ? `/uploads/${req.file.filename}` : null;
+  const profile_picture = req.file ? req.file.path : null;
   
   try {
     const result = await db.query(

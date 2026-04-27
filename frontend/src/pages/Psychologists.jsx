@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { 
   ArrowLeft, 
   MessageSquare, 
@@ -21,10 +21,25 @@ const Psychologists = () => {
   const [selectedPsych, setSelectedPsych] = useState(null);
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState('');
-  const [loading, setLoading] = useState(true);
+   const [loading, setLoading] = useState(true);
+   const messagesEndRef = useRef(null);
+   
+   const scrollToBottom = () => {
+     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+   };
+
+   useEffect(() => {
+     scrollToBottom();
+   }, [messages]);
   
   const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
-  const userId = 'user_' + Math.random().toString(36).substr(2, 9); // Mock unique user ID
+  const [userId] = useState(() => {
+    const saved = localStorage.getItem('chat_user_id');
+    if (saved) return saved;
+    const newUser = 'user_' + Math.random().toString(36).substr(2, 9);
+    localStorage.setItem('chat_user_id', newUser);
+    return newUser;
+  });
 
   useEffect(() => {
     fetchPsychologists();
@@ -42,16 +57,27 @@ const Psychologists = () => {
     }
   };
 
-  const openChat = async (psych) => {
-    setSelectedPsych(psych);
-    try {
-      const res = await fetch(`${apiUrl}/psychologists/chat/${userId}/${psych.id}`);
-      const data = await res.json();
-      setMessages(data);
-    } catch (err) {
-      console.error(err);
-      setMessages([]);
+  useEffect(() => {
+    let interval;
+    if (selectedPsych) {
+      const fetchMessages = async () => {
+        try {
+          const res = await fetch(`${apiUrl}/psychologists/chat/${userId}/${selectedPsych.id}`);
+          const data = await res.json();
+          setMessages(data);
+        } catch (err) {
+          console.error(err);
+        }
+      };
+      
+      fetchMessages();
+      interval = setInterval(fetchMessages, 3000);
     }
+    return () => clearInterval(interval);
+  }, [selectedPsych, userId, apiUrl]);
+
+  const openChat = (psych) => {
+    setSelectedPsych(psych);
   };
 
   const handleSendMessage = async (e) => {
@@ -224,21 +250,22 @@ const Psychologists = () => {
                     Chat started with {selectedPsych.name}
                   </span>
                 </div>
-                {messages.map((m, i) => (
-                  <div key={i} style={{ 
-                    alignSelf: m.sender_id === userId ? 'flex-end' : 'flex-start',
-                    maxWidth: '80%',
-                    background: m.sender_id === userId ? 'var(--primary-blue)' : '#f0f2f5',
-                    color: m.sender_id === userId ? 'white' : 'var(--text-dark)',
-                    padding: '1rem',
-                    borderRadius: m.sender_id === userId ? '18px 18px 0 18px' : '18px 18px 18px 0',
-                    fontSize: '0.95rem',
-                    lineHeight: '1.5'
-                  }}>
-                    {m.message}
-                  </div>
-                ))}
-              </div>
+                   {messages.map((m, i) => (
+                   <div key={i} style={{ 
+                     alignSelf: m.sender_id === userId ? 'flex-end' : 'flex-start',
+                     maxWidth: '80%',
+                     background: m.sender_id === userId ? 'var(--primary-blue)' : '#f0f2f5',
+                     color: m.sender_id === userId ? 'white' : 'var(--text-dark)',
+                     padding: '1rem',
+                     borderRadius: m.sender_id === userId ? '18px 18px 0 18px' : '18px 18px 18px 0',
+                     fontSize: '0.95rem',
+                     lineHeight: '1.5'
+                   }}>
+                     {m.message}
+                   </div>
+                 ))}
+                 <div ref={messagesEndRef} />
+               </div>
 
               {/* Chat Input */}
               <form onSubmit={handleSendMessage} style={{ padding: '2rem', borderTop: '1px solid #f0f2f5' }}>

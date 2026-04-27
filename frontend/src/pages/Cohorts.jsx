@@ -138,7 +138,7 @@ const Cohorts = () => {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          amount: 5000,
+          amount: 1000,
           description: `Application Fee for ${selectedCohort.name}`,
           customer: {
             name: user.username,
@@ -290,7 +290,7 @@ const Cohorts = () => {
                   <h4 style={{ color: '#ff5630', fontWeight: '800' }}>Registration Fee</h4>
                 </div>
                 <p style={{ color: '#666', lineHeight: '1.6' }}>
-                  After submitting your application, you will be required to pay a one-time application fee of <strong style={{ color: '#ff5630', fontSize: '1.2rem' }}>5,000 RWF</strong> to secure your spot.
+                  After submitting your application, you will be required to pay a one-time application fee of <strong style={{ color: '#ff5630', fontSize: '1.2rem' }}>1,000 RWF</strong> to secure your spot.
                 </p>
               </div>
 
@@ -446,7 +446,7 @@ const Cohorts = () => {
                       boxShadow: '0 10px 20px rgba(0, 82, 204, 0.2)'
                     }}
                   >
-                    {isPaying ? 'Processing Push...' : 'Pay 5,000 RWF Now'}
+                    {isPaying ? 'Processing Push...' : 'Pay 1,000 RWF Now'}
                   </button>
                 </motion.div>
               )}
