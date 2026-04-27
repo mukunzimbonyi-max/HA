@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ShieldCheck, User, Menu, Settings, Globe, Sun, Moon } from 'lucide-react';
+import { ShieldCheck, User, Menu, Settings, Globe, Sun, Moon, LogOut } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -10,6 +10,11 @@ const Navbar = () => {
   const [showSettings, setShowSettings] = React.useState(false);
   const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
   const user = JSON.parse(localStorage.getItem('user'));
+  
+  const handleLogout = () => {
+    localStorage.removeItem('user');
+    navigate('/auth');
+  };
 
   const languages = [
     { code: 'en', label: 'English' },
@@ -86,6 +91,16 @@ const Navbar = () => {
             <span style={{ fontWeight: '700', color: 'var(--text-dark)', fontSize: '0.8rem' }}>
               {user.username.split(' ')[0]}
             </span>
+            <button 
+              onClick={(e) => { e.stopPropagation(); handleLogout(); }}
+              title="Logout"
+              style={{ 
+                background: 'none', border: 'none', cursor: 'pointer', padding: '5px',
+                display: 'flex', alignItems: 'center', color: '#ff5630', marginLeft: '5px'
+              }}
+            >
+              <LogOut size={16} />
+            </button>
           </div>
         ) : (
           <button 

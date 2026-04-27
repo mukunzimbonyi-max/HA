@@ -18,6 +18,8 @@ import {
 import { motion, AnimatePresence } from 'framer-motion';
 import Navbar from '../components/Navbar';
 
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+
 const Cohorts = () => {
   const navigate = useNavigate();
   const [cohorts, setCohorts] = useState([]);
@@ -33,8 +35,7 @@ const Cohorts = () => {
   useEffect(() => {
     const fetchCohorts = async () => {
       try {
-        const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
-        const response = await fetch(`${apiUrl}/cohorts`);
+        const response = await fetch(`${API_URL}/cohorts`);
         if (!response.ok) throw new Error('Fetch failed');
         const data = await response.json();
         if (data && data.length > 0) {
@@ -46,9 +47,9 @@ const Cohorts = () => {
         console.error('Error fetching cohorts:', err);
         // Robust frontend fallback
         setCohorts([
-          { id: 1, name: 'SRH Empowerment Cohort 1', description: 'Comprehensive SRH education for youth across Rwanda. Focus on rights and healthy choices.', start_date: '2024-06-01', status: 'open' },
-          { id: 2, name: 'Mental Health Resilience', description: 'Building emotional strength and community support systems in a safe space.', start_date: '2024-07-15', status: 'open' },
-          { id: 3, name: 'Healthy Relationships', description: 'Navigating boundaries, consent, and effective communication with experts.', start_date: '2024-08-20', status: 'open' }
+          { id: 4, name: 'SRH Empowerment Cohort 1', description: 'Comprehensive SRH education for youth across Rwanda. Focus on rights and healthy choices.', start_date: '2024-06-01', status: 'open' },
+          { id: 5, name: 'Mental Health Resilience', description: 'Building emotional strength and community support systems in a safe space.', start_date: '2024-07-15', status: 'open' },
+          { id: 6, name: 'Healthy Relationships', description: 'Navigating boundaries, consent, and effective communication with experts.', start_date: '2024-08-20', status: 'open' }
         ]);
       } finally {
         setLoading(false);
@@ -86,6 +87,93 @@ const Cohorts = () => {
       navigate('/auth');
     } else {
       setStep('application');
+    }
+  };
+
+  const [motivation, setMotivation] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleApplicationSubmit = async (e) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    try {
+      const response = await fetch(`${API_URL}/cohorts/apply`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          cohort_id: selectedCohort?.id,
+          user_id: user?.id,
+          full_name: user?.username,
+          email: user?.email,
+          motivation: motivation
+        })
+      });
+      if (response.ok) {
+        setStep('payment');
+      } else {
+        const errorData = await response.json();
+        alert(`Submission failed: ${errorData.error || 'Server error'}. Please try logging out and back in.`);
+      }
+    } catch (err) {
+      console.error('Error submitting application:', err);
+      alert('An error occurred. Please make sure the server is running.');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const [paymentPhone, setPaymentPhone] = useState(user?.phone || '');
+  const [isPaying, setIsPaying] = useState(false);
+
+  const handleInitiatePayment = async () => {
+    if (!paymentPhone || paymentPhone.length < 10) {
+      alert('Please enter a valid phone number');
+      return;
+    }
+    
+    setIsPaying(true);
+    try {
+      // Step 1: Create Invoice
+      const invRes = await fetch(`${API_URL}/payments/create-invoice`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          amount: 5000,
+          description: `Application Fee for ${selectedCohort.name}`,
+          customer: {
+            name: user.username,
+            email: user.email,
+            phoneNumber: paymentPhone
+          }
+        })
+      });
+      const invData = await invRes.json();
+      
+      if (!invData.success) throw new Error('Invoice creation failed');
+
+      // Step 2: Initiate Push
+      const pushRes = await fetch(`${API_URL}/payments/initiate-push`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          phone: paymentPhone,
+          provider: paymentMethod === 'momo' ? 'MTN' : 'AIRTEL',
+          invoiceNumber: invData.data.invoiceNumber
+        })
+      });
+      const pushData = await pushRes.json();
+
+      if (pushData.success) {
+        alert(`Payment initiated! Please check your phone (${paymentPhone}) for the ${paymentMethod.toUpperCase()} prompt.`);
+        navigate('/home');
+      } else {
+        alert('Payment initiation failed. Please try again.');
+      }
+    } catch (err) {
+      console.error('Payment Error:', err);
+      alert('An error occurred during payment. Please contact support.');
+    } finally {
+      setIsPaying(false);
     }
   };
 
@@ -264,7 +352,7 @@ const Cohorts = () => {
               style={{ background: 'white', padding: '4rem', borderRadius: '32px', boxShadow: '0 20px 50px rgba(0,0,0,0.05)' }}
             >
               <h2 style={{ fontSize: '2rem', fontWeight: '900', marginBottom: '2rem' }}>Complete Application</h2>
-              <form onSubmit={(e) => { e.preventDefault(); setStep('payment'); }} style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+              <form onSubmit={handleApplicationSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem' }}>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                     <label style={{ fontWeight: '700', fontSize: '0.9rem' }}>Full Name</label>
@@ -277,10 +365,25 @@ const Cohorts = () => {
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                   <label style={{ fontWeight: '700', fontSize: '0.9rem' }}>Why do you want to join this cohort?</label>
-                  <textarea required placeholder="Tell us about your interest..." style={{ padding: '1rem', borderRadius: '12px', border: '1px solid #e2e8f0', minHeight: '120px' }} />
+                  <textarea 
+                    required 
+                    value={motivation}
+                    onChange={(e) => setMotivation(e.target.value)}
+                    placeholder="Tell us about your interest..." 
+                    style={{ padding: '1rem', borderRadius: '12px', border: '1px solid #e2e8f0', minHeight: '120px' }} 
+                  />
                 </div>
-                <button type="submit" style={{ background: 'var(--primary-blue)', color: 'white', border: 'none', padding: '1.2rem', borderRadius: '16px', fontWeight: '800', cursor: 'pointer', marginTop: '1rem' }}>
-                  Submit & Proceed to Payment
+                <button 
+                  type="submit" 
+                  disabled={isSubmitting}
+                  style={{ 
+                    background: isSubmitting ? '#cbd5e1' : 'var(--primary-blue)', 
+                    color: 'white', border: 'none', padding: '1.2rem', 
+                    borderRadius: '16px', fontWeight: '800', 
+                    cursor: isSubmitting ? 'not-allowed' : 'pointer', marginTop: '1rem' 
+                  }}
+                >
+                  {isSubmitting ? 'Submitting...' : 'Submit & Proceed to Payment'}
                 </button>
               </form>
             </motion.div>
@@ -297,35 +400,53 @@ const Cohorts = () => {
                 <ShieldCheck size={40} />
               </div>
               <h2 style={{ fontSize: '2.2rem', fontWeight: '900', marginBottom: '1rem' }}>Application Submitted!</h2>
-              <p style={{ color: 'var(--text-muted)', marginBottom: '3rem' }}>Final step: Pay the application fee to activate your enrollment.</p>
+              <p style={{ color: 'var(--text-muted)', marginBottom: '3rem' }}>Final step: Pay the application fee via **IremboPay** to activate your enrollment.</p>
               
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem', marginBottom: '3rem' }}>
                 {[
-                  { id: 'momo', label: 'MTN Mobile Money', icon: <Smartphone />, color: '#ffcc00' },
-                  { id: 'airtel', label: 'Airtel Money', icon: <Smartphone />, color: '#ff0000' },
-                  { id: 'card', label: 'Debit/Credit Card', icon: <CreditCard />, color: '#0052cc' }
+                  { id: 'momo', label: 'MTN Mobile Money', icon: <Smartphone />, color: '#ffcc00', official: '0787065284' },
+                  { id: 'airtel', label: 'Airtel Money', icon: <Smartphone />, color: '#ff0000', official: '0721151169' }
                 ].map(method => (
                   <div 
                     key={method.id}
                     onClick={() => setPaymentMethod(method.id)}
                     style={{ 
                       padding: '2rem 1.5rem', borderRadius: '24px', border: paymentMethod === method.id ? `3px solid ${method.color}` : '1px solid #e2e8f0',
-                      cursor: 'pointer', transition: '0.3s', background: paymentMethod === method.id ? `${method.color}05` : 'white'
+                      cursor: 'pointer', transition: '0.3s', background: paymentMethod === method.id ? `${method.color}05` : 'white',
+                      position: 'relative', overflow: 'hidden'
                     }}
                   >
+                    {paymentMethod === method.id && <div style={{ position: 'absolute', top: 0, right: 0, background: method.color, color: 'white', padding: '4px 12px', fontSize: '0.7rem', fontWeight: '800' }}>SELECTED</div>}
                     <div style={{ color: method.color, marginBottom: '1rem', display: 'flex', justifyContent: 'center' }}>{method.icon}</div>
                     <span style={{ fontWeight: '700', fontSize: '0.9rem' }}>{method.label}</span>
+                    <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '8px' }}>Official: {method.official}</p>
                   </div>
                 ))}
               </div>
 
               {paymentMethod && (
-                <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
+                <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} style={{ maxWidth: '400px', margin: '0 auto' }}>
+                  <div style={{ textAlign: 'left', marginBottom: '2rem' }}>
+                    <label style={{ fontSize: '0.85rem', fontWeight: '700', color: 'var(--text-dark)', marginBottom: '8px', display: 'block' }}>Enter Your Phone Number</label>
+                    <input 
+                      type="text" 
+                      value={paymentPhone}
+                      onChange={(e) => setPaymentPhone(e.target.value)}
+                      placeholder="07********"
+                      style={{ width: '100%', padding: '1rem', borderRadius: '12px', border: '1px solid #e2e8f0', fontSize: '1.1rem', fontWeight: '600' }}
+                    />
+                  </div>
                   <button 
-                    onClick={() => { alert('Payment initiated! You will receive a prompt shortly.'); navigate('/home'); }}
-                    style={{ background: 'var(--primary-blue)', color: 'white', border: 'none', padding: '1.2rem 4rem', borderRadius: '16px', fontWeight: '800', cursor: 'pointer', fontSize: '1.1rem' }}
+                    disabled={isPaying}
+                    onClick={handleInitiatePayment}
+                    style={{ 
+                      background: 'var(--primary-blue)', color: 'white', border: 'none', 
+                      padding: '1.2rem 4rem', borderRadius: '16px', fontWeight: '800', 
+                      cursor: isPaying ? 'not-allowed' : 'pointer', fontSize: '1.1rem', width: '100%',
+                      boxShadow: '0 10px 20px rgba(0, 82, 204, 0.2)'
+                    }}
                   >
-                    Pay 5,000 RWF Now
+                    {isPaying ? 'Processing Push...' : 'Pay 5,000 RWF Now'}
                   </button>
                 </motion.div>
               )}

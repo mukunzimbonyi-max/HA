@@ -15,12 +15,18 @@ import {
   Stethoscope,
   Home as HomeIcon,
   Bell,
-  ArrowLeft
+  ArrowLeft,
+  ShieldCheck,
+  CheckCircle,
+  XCircle,
+  LogOut
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useLanguage } from '../context/LanguageContext';
 import ReactQuill from 'react-quill-new';
 import 'react-quill-new/dist/quill.snow.css';
+
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
 const AdminDashboard = () => {
   const { t } = useLanguage();
@@ -33,6 +39,7 @@ const AdminDashboard = () => {
   const [facilities, setFacilities] = useState([]);
   const [videos, setVideos] = useState([]);
   const [updates, setUpdates] = useState([]);
+  const [applications, setApplications] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingId, setEditingId] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -70,8 +77,6 @@ const AdminDashboard = () => {
     content: '',
     file_url: ''
   });
-
-  const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
   useEffect(() => {
     if (isLoggedIn) {
@@ -159,17 +164,21 @@ const AdminDashboard = () => {
     setLoading(true);
     try {
       if (activeTab === 'facilities') {
-        const res = await fetch(`${apiUrl}/facilities/nearby?lat=-1.94&lng=30.06&radius=100`);
+        const res = await fetch(`${API_URL}/facilities/nearby?lat=-1.94&lng=30.06&radius=100`);
         const data = await res.json();
         setFacilities(data);
       } else if (activeTab === 'videos') {
-        const res = await fetch(`${apiUrl}/videos`);
+        const res = await fetch(`${API_URL}/videos`);
         const data = await res.json();
         setVideos(data);
       } else if (activeTab === 'updates' || activeTab === 'masterclasses') {
-        const res = await fetch(`${apiUrl}/updates`);
+        const res = await fetch(`${API_URL}/updates`);
         const data = await res.json();
         setUpdates(data);
+      } else if (activeTab === 'applications') {
+        const res = await fetch(`${API_URL}/cohorts/applications`);
+        const data = await res.json();
+        setApplications(data);
       }
     } catch (err) {
       console.error('Fetch error:', err);
@@ -178,11 +187,36 @@ const AdminDashboard = () => {
     }
   };
 
+  const handleApproveApplication = async (id) => {
+    try {
+      const res = await fetch(`${API_URL}/cohorts/applications/${id}/approve`, { method: 'POST' });
+      if (res.ok) {
+        alert('Application approved!');
+        fetchData();
+      }
+    } catch (err) {
+      console.error('Error approving:', err);
+    }
+  };
+
+  const handleRejectApplication = async (id) => {
+    if (!window.confirm('Are you sure you want to reject this application?')) return;
+    try {
+      const res = await fetch(`${API_URL}/cohorts/applications/${id}/reject`, { method: 'POST' });
+      if (res.ok) {
+        alert('Application rejected.');
+        fetchData();
+      }
+    } catch (err) {
+      console.error('Error rejecting:', err);
+    }
+  };
+
   const handleAddFacility = async (e) => {
     e.preventDefault();
     try {
       const method = editingId ? 'PUT' : 'POST';
-      const endpoint = editingId ? `${apiUrl}/facilities/${editingId}` : `${apiUrl}/facilities`;
+      const endpoint = editingId ? `${API_URL}/facilities/${editingId}` : `${API_URL}/facilities`;
 
       const response = await fetch(endpoint, {
         method,
@@ -205,14 +239,19 @@ const AdminDashboard = () => {
 
   const handleAddVideo = async (e) => {
     e.preventDefault();
-    try {
-      const method = editingId ? 'PUT' : 'POST';
-      const endpoint = editingId ? `${apiUrl}/videos/${editingId}` : `${apiUrl}/videos`;
+    const method = editingId ? 'PUT' : 'POST';
+    const endpoint = editingId ? `${API_URL}/videos/${editingId}` : `${API_URL}/videos`;
 
+    const sanitizedData = {
+      ...videoData,
+      url: getEmbedUrl(videoData.url)
+    };
+
+    try {
       const response = await fetch(endpoint, {
         method,
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(videoData)
+        body: JSON.stringify(sanitizedData)
       });
       if (response.ok) {
         alert(editingId ? 'Video updated successfully!' : 'Video saved successfully!');
@@ -232,7 +271,7 @@ const AdminDashboard = () => {
     e.preventDefault();
     try {
       const method = editingId ? 'PUT' : 'POST';
-      const endpoint = editingId ? `${apiUrl}/updates/${editingId}` : `${apiUrl}/updates`;
+      const endpoint = editingId ? `${API_URL}/updates/${editingId}` : `${API_URL}/updates`;
 
       const response = await fetch(endpoint, {
         method,
@@ -304,6 +343,17 @@ const AdminDashboard = () => {
     } catch (err) {
       console.error('Error deleting item:', err);
     }
+  };
+
+  const getEmbedUrl = (url) => {
+    if (!url) return '';
+    if (url.includes('youtube.com/embed/')) return url;
+    const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+    const match = url.match(regExp);
+    if (match && match[2].length === 11) {
+      return `https://www.youtube.com/embed/${match[2]}`;
+    }
+    return url;
   };
 
   return (
@@ -388,6 +438,30 @@ const AdminDashboard = () => {
           >
             <Users size={20} /> Masterclasses
           </button>
+          <button 
+            onClick={() => setActiveTab('applications')}
+            style={{
+              display: 'flex', alignItems: 'center', gap: '12px', padding: '1rem', borderRadius: '12px',
+              background: activeTab === 'applications' ? 'var(--primary-blue)' : 'transparent',
+              color: activeTab === 'applications' ? 'white' : 'var(--text-muted)',
+              border: 'none', cursor: 'pointer', fontWeight: '600', transition: '0.3s'
+            }}
+          >
+            <ShieldCheck size={20} /> Applications
+          </button>
+
+          <div style={{ marginTop: 'auto', paddingTop: '2rem' }}>
+            <button 
+              onClick={() => { localStorage.removeItem('user'); navigate('/auth'); }}
+              style={{
+                display: 'flex', alignItems: 'center', gap: '12px', padding: '1rem', borderRadius: '12px',
+                background: 'transparent', color: '#ff5630', border: 'none', 
+                cursor: 'pointer', fontWeight: '700', transition: '0.3s', width: '100%'
+              }}
+            >
+              <LogOut size={20} /> Logout
+            </button>
+          </div>
         </nav>
       </div>
 
@@ -525,6 +599,75 @@ const AdminDashboard = () => {
                 <Users size={48} color="#e2e8f0" style={{ marginBottom: '1rem' }} />
                 <h3>No cohorts created yet</h3>
                 <p style={{ color: 'var(--text-muted)' }}>Click "Add New Item" to start your first masterclass cohort.</p>
+              </div>
+            )}
+
+            {activeTab === 'applications' && (
+              <div style={{ display: 'grid', gap: '1rem' }}>
+                {applications.length === 0 ? (
+                  <div style={{ textAlign: 'center', padding: '5rem', background: 'white', borderRadius: '24px' }}>
+                    <ShieldCheck size={48} color="#e2e8f0" style={{ marginBottom: '1rem' }} />
+                    <h3>No pending applications</h3>
+                  </div>
+                ) : (
+                  applications.map(app => (
+                    <motion.div 
+                      key={app.id}
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      style={{ 
+                        background: 'white', padding: '2rem', borderRadius: '20px', 
+                        boxShadow: '0 4px 15px rgba(0,0,0,0.05)', border: '1px solid #edf2f7',
+                        display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start'
+                      }}
+                    >
+                      <div style={{ flex: 1 }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '1rem' }}>
+                          <h3 style={{ fontSize: '1.2rem', fontWeight: '800' }}>{app.full_name}</h3>
+                          <span style={{ 
+                            background: app.status === 'pending' ? '#fff9e6' : app.status === 'approved' ? '#e6fff0' : '#fff0f0',
+                            color: app.status === 'pending' ? '#b78103' : app.status === 'approved' ? '#00875a' : '#ff5630',
+                            padding: '4px 12px', borderRadius: '50px', fontSize: '0.75rem', fontWeight: '700', textTransform: 'uppercase'
+                          }}>
+                            {app.status}
+                          </span>
+                        </div>
+                        <p style={{ fontSize: '0.9rem', color: 'var(--text-muted)', marginBottom: '0.5rem' }}>
+                          <strong>Cohort:</strong> {app.cohort_name}
+                        </p>
+                        <p style={{ fontSize: '0.9rem', color: 'var(--text-muted)', marginBottom: '1rem' }}>
+                          <strong>Motivation:</strong> {app.motivation}
+                        </p>
+                        <p style={{ fontSize: '0.8rem', color: '#94a3b8' }}>Submitted on: {new Date(app.created_at).toLocaleString()}</p>
+                      </div>
+                      
+                      {app.status === 'pending' && (
+                        <div style={{ display: 'flex', gap: '10px' }}>
+                          <button 
+                            onClick={() => handleApproveApplication(app.id)}
+                            style={{ 
+                              background: '#e6fff0', color: '#00875a', border: 'none', 
+                              padding: '10px 20px', borderRadius: '12px', fontWeight: '700', 
+                              cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px' 
+                            }}
+                          >
+                            <CheckCircle size={18} /> Approve
+                          </button>
+                          <button 
+                            onClick={() => handleRejectApplication(app.id)}
+                            style={{ 
+                              background: '#fff0f0', color: '#ff5630', border: 'none', 
+                              padding: '10px 20px', borderRadius: '12px', fontWeight: '700', 
+                              cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px' 
+                            }}
+                          >
+                            <XCircle size={18} /> Reject
+                          </button>
+                        </div>
+                      )}
+                    </motion.div>
+                  ))
+                )}
               </div>
             )}
           </div>

@@ -140,6 +140,17 @@ const Home = () => {
     navigate(path);
   };
 
+  const getEmbedUrl = (url) => {
+    if (!url) return '';
+    if (url.includes('youtube.com/embed/')) return url;
+    const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+    const match = url.match(regExp);
+    if (match && match[2].length === 11) {
+      return `https://www.youtube.com/embed/${match[2]}`;
+    }
+    return url;
+  };
+
   return (
     <div className="home-container" style={{ minHeight: '100vh', paddingBottom: '80px' }}>
       <Navbar />
@@ -247,9 +258,10 @@ const Home = () => {
                   <iframe 
                     width="100%" 
                     height="100%" 
-                    src={video.url} 
+                    src={getEmbedUrl(video.url)} 
                     title={video.title} 
                     frameBorder="0" 
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                     allowFullScreen
                     style={{ border: 'none' }}
                   ></iframe>
