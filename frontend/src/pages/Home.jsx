@@ -22,6 +22,40 @@ import Footer from '../components/Footer';
 import Navbar from '../components/Navbar';
 import { useNavigate } from 'react-router-dom';
 
+const SkeletonCard = () => (
+  <div style={{ 
+    background: 'var(--white)', 
+    borderRadius: '24px', 
+    padding: '1.2rem',
+    boxShadow: 'var(--shadow)',
+    aspectRatio: '1 / 1',
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '15px'
+  }}>
+    <div style={{ 
+      height: '60%', 
+      background: '#f0f2f5', 
+      borderRadius: '16px',
+      animation: 'pulse 1.5s infinite' 
+    }} />
+    <div style={{ height: '20px', width: '70%', background: '#f0f2f5', borderRadius: '4px', animation: 'pulse 1.5s infinite' }} />
+    <div style={{ height: '15px', width: '90%', background: '#f0f2f5', borderRadius: '4px', animation: 'pulse 1.5s infinite' }} />
+  </div>
+);
+
+const SkeletonUpdate = () => (
+  <div style={{ 
+    background: 'var(--white)', padding: '1.5rem', borderRadius: '20px', 
+    boxShadow: 'var(--shadow)', border: '1px solid #edf2f7',
+    display: 'flex', flexDirection: 'column', gap: '15px'
+  }}>
+    <div style={{ height: '20px', width: '60%', background: '#f0f2f5', borderRadius: '4px', animation: 'pulse 1.5s infinite' }} />
+    <div style={{ height: '60px', width: '100%', background: '#f0f2f5', borderRadius: '4px', animation: 'pulse 1.5s infinite' }} />
+    <div style={{ height: '15px', width: '30%', background: '#f0f2f5', borderRadius: '4px', animation: 'pulse 1.5s infinite' }} />
+  </div>
+);
+
 const Home = () => {
   const { language, t, speak } = useLanguage();
   const navigate = useNavigate();
@@ -247,7 +281,9 @@ const Home = () => {
             gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', 
             gap: '1.5rem' 
           }}>
-            {videos.length > 0 ? videos.map((video) => (
+            {loading ? (
+              [1, 2, 3].map(i => <SkeletonCard key={i} />)
+            ) : videos.length > 0 ? videos.map((video) => (
               <motion.div 
                 key={video.id} 
                 whileHover={{ y: -10 }}
@@ -351,7 +387,9 @@ const Home = () => {
           </div>
           
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '1.5rem' }}>
-            {updates.length > 0 ? updates.map((update) => (
+            {loading ? (
+              [1, 2, 3].map(i => <SkeletonUpdate key={i} />)
+            ) : updates.length > 0 ? updates.map((update) => (
               <motion.div 
                 key={update.id}
                 whileHover={{ y: -5 }}
