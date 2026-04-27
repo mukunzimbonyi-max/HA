@@ -93,6 +93,28 @@ const seedDb = async () => {
       );
     }
 
+    // Seed updates
+    await client.query('DELETE FROM updates');
+    const updates = [
+      {
+        title: 'Biannual Masterclass Registration Open',
+        content: 'Our next cohort on SRH and Mental Health is now accepting registrations. Join over 500 youth across Rwanda.',
+        file_url: 'https://res.cloudinary.com/demo/image/upload/v1312461204/sample.jpg'
+      },
+      {
+        title: 'New Partner Clinics in Kigali',
+        content: 'We are excited to announce 5 new clinics joining our GPS directory this month to provide better services.',
+        file_url: null
+      }
+    ];
+
+    for (const u of updates) {
+      await client.query(
+        'INSERT INTO updates (title, content, file_url) VALUES ($1, $2, $3)',
+        [u.title, u.content, u.file_url]
+      );
+    }
+
     console.log('Database seeded successfully.');
   } catch (err) {
     console.error('Error seeding database:', err);

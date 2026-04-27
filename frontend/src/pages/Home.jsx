@@ -41,25 +41,36 @@ const Home = () => {
   const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
   useEffect(() => {
-    const fetchData = async () => {
-      setLoading(true);
+    const fetchVideos = async () => {
       try {
-        const [videoRes, updateRes] = await Promise.all([
-          fetch(`${apiUrl}/videos?language=${language}`),
-          fetch(`${apiUrl}/updates`)
-        ]);
-        const videoData = await videoRes.json();
-        const updateData = await updateRes.json();
-        setVideos(videoData);
-        setUpdates(updateData);
+        const res = await fetch(`${apiUrl}/videos?language=${language}`);
+        const data = await res.json();
+        console.log('Videos loaded:', data);
+        setVideos(data);
       } catch (err) {
-        console.error('Fetch error:', err);
-      } finally {
-        setLoading(false);
+        console.error('Video fetch error:', err);
       }
     };
-    fetchData();
-  }, [language]);
+
+    const fetchUpdates = async () => {
+      try {
+        const res = await fetch(`${apiUrl}/updates`);
+        const data = await res.json();
+        console.log('Updates loaded:', data);
+        setUpdates(data);
+      } catch (err) {
+        console.error('Update fetch error:', err);
+      }
+    };
+
+    const loadAll = async () => {
+      setLoading(true);
+      await Promise.allSettled([fetchVideos(), fetchUpdates()]);
+      setLoading(false);
+    };
+
+    loadAll();
+  }, [language, apiUrl]);
 
   const [isListening, setIsListening] = useState(false);
 

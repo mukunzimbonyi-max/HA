@@ -124,7 +124,7 @@ const PharmacyLocator = () => {
               textTransform: 'capitalize'
             }}
           >
-            {type}s
+            {type === 'pharmacy' ? 'pharmacies' : (type === 'hospital' ? 'hospitals' : 'all')}
           </button>
         ))}
       </div>

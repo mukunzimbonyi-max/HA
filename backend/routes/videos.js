@@ -4,7 +4,7 @@ const db = require('../db');
 
 // Get all videos
 router.get('/', async (req, res) => {
-  const { lang } = req.query;
+  const lang = req.query.lang || req.query.language;
   try {
     let query = 'SELECT * FROM videos';
     let params = [];
