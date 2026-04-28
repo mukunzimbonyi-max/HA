@@ -64,7 +64,17 @@ const Auth = () => {
       if (response.ok) {
         localStorage.setItem('user', JSON.stringify(data));
         alert(isLogin ? 'Welcome back!' : 'Account created successfully!');
-        navigate('/home');
+        
+        // Redirect based on user role
+        if (data.role === 'admin') {
+          navigate('/admin');
+        } else if (data.role === 'mentor') {
+          navigate('/mental-health-dashboard');
+        } else if (data.role === 'client') {
+          navigate('/client-dashboard');
+        } else {
+          navigate('/home');
+        }
       } else {
         alert(data.error || 'Authentication failed');
       }
@@ -103,6 +113,7 @@ const Auth = () => {
       padding: '2rem'
     }}>
       <motion.div 
+        className="responsive-auth-card"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         style={{

@@ -96,6 +96,46 @@ CREATE TABLE IF NOT EXISTS cohort_applications (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+-- 9. Client Documents (Charts, Assessments, etc.)
+CREATE TABLE IF NOT EXISTS client_documents (
+    id SERIAL PRIMARY KEY,
+    client_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+    file_url TEXT NOT NULL,
+    document_type VARCHAR(100), -- 'chart', 'assessment', 'report', etc.
+    description TEXT,
+    status VARCHAR(50) DEFAULT 'submitted', -- 'submitted', 'reviewed', 'responded'
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- 10. Document Responses (Feedback from Mental Health Professionals)
+CREATE TABLE IF NOT EXISTS document_responses (
+    id SERIAL PRIMARY KEY,
+    document_id INTEGER REFERENCES client_documents(id) ON DELETE CASCADE,
+    professional_id INTEGER REFERENCES users(id) ON DELETE SET NULL,
+    response_text TEXT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- 11. Client-Mentor Chats
+CREATE TABLE IF NOT EXISTS chats (
+    id SERIAL PRIMARY KEY,
+    sender_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+    receiver_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+    message TEXT NOT NULL,
+    is_read BOOLEAN DEFAULT false,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- 11. Client Admission Status
+CREATE TABLE IF NOT EXISTS admission_status (
+    id SERIAL PRIMARY KEY,
+    client_id INTEGER UNIQUE REFERENCES users(id) ON DELETE CASCADE,
+    status VARCHAR(50) DEFAULT 'pending', -- 'admitted', 'pending', 'rejected'
+    notes TEXT,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
 -- ==========================================
 -- INITIAL SEED DATA
 -- ==========================================

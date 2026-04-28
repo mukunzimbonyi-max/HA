@@ -175,6 +175,10 @@ const AdminDashboard = () => {
         const res = await fetch(`${API_URL}/updates`);
         const data = await res.json();
         setUpdates(data);
+      } else if (activeTab === 'masterclasses') {
+        const res = await fetch(`${API_URL}/cohorts`);
+        const data = await res.json();
+        setUpdates(data); // Reusing updates state for listing cohorts in this tab
       } else if (activeTab === 'applications') {
         const res = await fetch(`${API_URL}/cohorts/applications`);
         const data = await res.json();
@@ -333,8 +337,9 @@ const AdminDashboard = () => {
     if (!window.confirm('Are you sure you want to delete this item?')) return;
     try {
       const endpoint = activeTab === 'facilities' ? 'facilities' : 
-                      activeTab === 'videos' ? 'videos' : 'updates';
-      const response = await fetch(`${apiUrl}/${endpoint}/${id}`, {
+                      activeTab === 'videos' ? 'videos' : 
+                      activeTab === 'masterclasses' ? 'cohorts' : 'updates';
+      const response = await fetch(`${API_URL}/${endpoint}/${id}`, {
         method: 'DELETE'
       });
       if (response.ok) {
@@ -357,7 +362,7 @@ const AdminDashboard = () => {
   };
 
   return (
-    <div style={{ display: 'flex', minHeight: '100vh', background: '#f8f9fa' }}>
+    <div className="responsive-dashboard" style={{ display: 'flex', minHeight: '100vh', background: '#f8f9fa' }}>
       {/* Sidebar */}
       <div style={{ 
         width: '280px', 
@@ -450,18 +455,7 @@ const AdminDashboard = () => {
             <ShieldCheck size={20} /> Applications
           </button>
 
-          <div style={{ marginTop: 'auto', paddingTop: '2rem' }}>
-            <button 
-              onClick={() => { localStorage.removeItem('user'); navigate('/auth'); }}
-              style={{
-                display: 'flex', alignItems: 'center', gap: '12px', padding: '1rem', borderRadius: '12px',
-                background: 'transparent', color: '#ff5630', border: 'none', 
-                cursor: 'pointer', fontWeight: '700', transition: '0.3s', width: '100%'
-              }}
-            >
-              <LogOut size={20} /> Logout
-            </button>
-          </div>
+          {/* Logout button removed as per request */}
         </nav>
       </div>
 
@@ -594,7 +588,40 @@ const AdminDashboard = () => {
               </motion.div>
             ))}
 
-            {(activeTab === 'masterclasses') && (
+            {activeTab === 'masterclasses' && updates.map(c => (
+              <motion.div 
+                key={c.id}
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                style={{ 
+                  background: 'white', padding: '1.5rem', borderRadius: '16px', 
+                  display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+                  boxShadow: '0 2px 8px rgba(0,0,0,0.05)', border: '1px solid #edf2f7'
+                }}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem' }}>
+                  <div style={{ background: '#eef2ff', padding: '12px', borderRadius: '12px', color: 'var(--primary-blue)' }}>
+                    <Users size={24} />
+                  </div>
+                  <div>
+                    <h3 style={{ fontSize: '1.1rem', color: 'var(--text-dark)' }}>{c.name}</h3>
+                    <p style={{ fontSize: '0.9rem', color: 'var(--text-muted)' }}>Status: {c.status.toUpperCase()} • Starts: {new Date(c.start_date).toLocaleDateString()}</p>
+                  </div>
+                </div>
+                <div style={{ display: 'flex', gap: '10px' }}>
+                  <button 
+                    onClick={() => handleEdit(c)}
+                    style={{ background: '#f8f9fa', border: 'none', padding: '8px', borderRadius: '8px', cursor: 'pointer' }}
+                  ><Edit size={18} color="var(--text-muted)" /></button>
+                  <button 
+                    onClick={() => handleDelete(c.id)}
+                    style={{ background: '#fff0f0', border: 'none', padding: '8px', borderRadius: '8px', cursor: 'pointer' }}
+                  ><Trash2 size={18} color="#ff5630" /></button>
+                </div>
+              </motion.div>
+            ))}
+
+            {activeTab === 'masterclasses' && updates.length === 0 && (
               <div style={{ textAlign: 'center', padding: '5rem', background: 'white', borderRadius: '24px', border: '2px dashed #e2e8f0' }}>
                 <Users size={48} color="#e2e8f0" style={{ marginBottom: '1rem' }} />
                 <h3>No cohorts created yet</h3>

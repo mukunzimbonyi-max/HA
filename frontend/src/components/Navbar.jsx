@@ -8,6 +8,7 @@ const Navbar = () => {
   const navigate = useNavigate();
   const { language, changeLanguage, t, theme, toggleTheme } = useLanguage();
   const [showSettings, setShowSettings] = React.useState(false);
+  const [isMenuOpen, setIsMenuOpen] = React.useState(false);
   const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
   const user = JSON.parse(localStorage.getItem('user'));
   
@@ -24,7 +25,7 @@ const Navbar = () => {
   ];
 
   return (
-    <nav style={{
+    <nav className="responsive-navbar" style={{
       display: 'flex',
       justifyContent: 'space-between',
       alignItems: 'center',
@@ -53,7 +54,7 @@ const Navbar = () => {
         </span>
       </div>
 
-      <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+      <div className="desktop-nav-links" style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
         <button 
           onClick={() => navigate('/admin')}
           style={{ 
@@ -63,6 +64,22 @@ const Navbar = () => {
           }}
         >
           ADMIN
+        </button>
+
+        <button 
+          onClick={() => {
+            if (user?.role === 'mentor') navigate('/mental-health-dashboard');
+            else if (user?.role === 'admin') navigate('/admin');
+            else if (user) navigate('/client-dashboard');
+            else navigate('/auth');
+          }}
+          style={{ 
+            background: '#f1f5f9', border: 'none', padding: '0.6rem 1rem', 
+            borderRadius: '12px', cursor: 'pointer', color: 'var(--text-muted)',
+            fontWeight: '700', fontSize: '0.75rem', letterSpacing: '0.5px'
+          }}
+        >
+          DASHBOARD
         </button>
 
         {user ? (
@@ -185,6 +202,151 @@ const Navbar = () => {
           </AnimatePresence>
         </div>
       </div>
+
+      {/* Mobile Menu Button & Settings wrapper */}
+      <div className="mobile-menu-btn" style={{ gap: '10px', alignItems: 'center' }}>
+        <div style={{ position: 'relative' }}>
+          <button 
+            onClick={() => setShowSettings(!showSettings)}
+            style={{ 
+              background: showSettings ? 'var(--primary-blue)' : '#f1f5f9', 
+              color: showSettings ? 'white' : 'var(--text-dark)',
+              border: 'none', width: '42px', height: '42px', borderRadius: '12px',
+              display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer',
+              transition: '0.3s'
+            }}
+          >
+            <Settings size={20} className={showSettings ? 'rotate-90' : ''} style={{ transition: '0.5s' }} />
+          </button>
+          <AnimatePresence>
+            {showSettings && (
+              <motion.div
+                initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                style={{
+                  position: 'absolute', top: '55px', right: 0, width: '220px',
+                  background: 'white', borderRadius: '20px', boxShadow: '0 10px 30px rgba(0,0,0,0.15)',
+                  padding: '1.2rem', border: '1px solid #f1f5f9', zIndex: 1001
+                }}
+              >
+                <div style={{ marginBottom: '1.2rem' }}>
+                  <p style={{ fontSize: '0.75rem', fontWeight: '800', color: 'var(--text-muted)', marginBottom: '10px', textTransform: 'uppercase' }}>Appearance</p>
+                  <button 
+                    onClick={toggleTheme}
+                    style={{ 
+                      width: '100%', display: 'flex', alignItems: 'center', gap: '10px', 
+                      background: '#f8fafc', border: 'none', padding: '10px', borderRadius: '10px',
+                      cursor: 'pointer', fontSize: '0.9rem', fontWeight: '600'
+                    }}
+                  >
+                    {theme === 'light' ? <Moon size={18} /> : <Sun size={18} />}
+                    {theme === 'light' ? 'Dark Mode' : 'Light Mode'}
+                  </button>
+                </div>
+                <div>
+                  <p style={{ fontSize: '0.75rem', fontWeight: '800', color: 'var(--text-muted)', marginBottom: '10px', textTransform: 'uppercase' }}>Language</p>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                    {languages.map(lang => (
+                      <button 
+                        key={lang.code}
+                        onClick={() => {
+                          changeLanguage(lang.code);
+                          setShowSettings(false);
+                        }}
+                        style={{ 
+                          width: '100%', textAlign: 'left', padding: '8px 10px', borderRadius: '8px',
+                          border: 'none', background: language === lang.code ? 'var(--primary-blue)' : 'transparent',
+                          color: language === lang.code ? 'white' : 'var(--text-dark)',
+                          fontSize: '0.85rem', fontWeight: language === lang.code ? '700' : '500',
+                          cursor: 'pointer', transition: '0.2s'
+                        }}
+                      >
+                        {lang.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
+
+        <button 
+          onClick={() => setIsMenuOpen(!isMenuOpen)}
+          style={{ 
+            background: isMenuOpen ? 'var(--primary-blue)' : '#f1f5f9', 
+            color: isMenuOpen ? 'white' : 'var(--text-dark)',
+            border: 'none', width: '42px', height: '42px', borderRadius: '12px',
+            display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer',
+            transition: '0.3s'
+          }}
+        >
+          <Menu size={20} />
+        </button>
+      </div>
+
+      {/* Mobile Dropdown Menu */}
+      <AnimatePresence>
+        {isMenuOpen && (
+          <motion.div
+            className="mobile-dropdown"
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+          >
+            <button 
+              onClick={() => { navigate('/admin'); setIsMenuOpen(false); }}
+              style={{ 
+                background: '#f1f5f9', border: 'none', padding: '1rem', 
+                borderRadius: '12px', cursor: 'pointer', color: 'var(--text-dark)',
+                fontWeight: '700', textAlign: 'left'
+              }}
+            >
+              Admin Console
+            </button>
+            <button 
+              onClick={() => {
+                if (user?.role === 'mentor') navigate('/mental-health-dashboard');
+                else if (user?.role === 'admin') navigate('/admin');
+                else if (user) navigate('/client-dashboard');
+                else navigate('/auth');
+                setIsMenuOpen(false);
+              }}
+              style={{ 
+                background: '#f1f5f9', border: 'none', padding: '1rem', 
+                borderRadius: '12px', cursor: 'pointer', color: 'var(--text-dark)',
+                fontWeight: '700', textAlign: 'left'
+              }}
+            >
+              Dashboard
+            </button>
+            {user ? (
+              <button 
+                onClick={() => { handleLogout(); setIsMenuOpen(false); }}
+                style={{ 
+                  background: '#fff0f0', border: 'none', padding: '1rem', 
+                  borderRadius: '12px', cursor: 'pointer', color: '#ff5630',
+                  fontWeight: '700', textAlign: 'left', display: 'flex', alignItems: 'center', gap: '8px'
+                }}
+              >
+                <LogOut size={18} /> Logout
+              </button>
+            ) : (
+              <button 
+                onClick={() => { navigate('/auth'); setIsMenuOpen(false); }}
+                style={{ 
+                  background: 'var(--primary-blue)', border: 'none', padding: '1rem', 
+                  borderRadius: '12px', cursor: 'pointer', color: 'white',
+                  fontWeight: '700', textAlign: 'left', display: 'flex', alignItems: 'center', gap: '8px'
+                }}
+              >
+                <User size={18} /> Login
+              </button>
+            )}
+          </motion.div>
+        )}
+      </AnimatePresence>
     </nav>
   );
 };

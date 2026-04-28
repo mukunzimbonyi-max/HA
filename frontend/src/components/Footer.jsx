@@ -17,16 +17,16 @@ const Footer = () => {
   return (
     <footer style={{ 
       background: '#002060', 
-      padding: '5rem 2rem 3rem', 
+      padding: '2rem 1rem 1rem', 
       borderTop: 'none',
-      marginTop: '4rem',
+      marginTop: '2rem',
       color: 'white'
     }}>
       <div className="container" style={{ 
         display: 'grid', 
-        gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', 
-        gap: '3rem',
-        marginBottom: '4rem'
+        gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', 
+        gap: '1.5rem',
+        marginBottom: '2rem'
       }}>
         {/* Branding Section */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
@@ -89,29 +89,29 @@ const Footer = () => {
       </div>
 
       {/* Centered Social Media Card */}
-      <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '4rem' }}>
+      <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '1.5rem' }}>
         <div style={{
           background: 'rgba(255,255,255,0.05)',
-          padding: '2.5rem 3.5rem',
-          borderRadius: '30px',
+          padding: '1rem 1.5rem',
+          borderRadius: '20px',
           backdropFilter: 'blur(10px)',
           border: '1px solid rgba(255,255,255,0.1)',
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
-          gap: '1.5rem',
-          maxWidth: '600px',
+          gap: '1rem',
+          maxWidth: '500px',
           width: '90%'
         }}>
-          <h3 style={{ fontSize: '0.9rem', fontWeight: '800', color: 'white', textTransform: 'uppercase', letterSpacing: '2px' }}>Follow Our Community</h3>
-          <div style={{ display: 'flex', gap: '1.2rem', flexWrap: 'wrap', justifyContent: 'center' }}>
+          <h3 style={{ fontSize: '0.85rem', fontWeight: '800', color: 'white', textTransform: 'uppercase', letterSpacing: '1px' }}>Follow Our Community</h3>
+          <div style={{ display: 'flex', gap: '0.8rem', flexWrap: 'wrap', justifyContent: 'center' }}>
             {[
-              { icon: <Share2 size={24} />, label: 'Facebook', color: '#1877F2' },
-              { icon: <Send size={24} />, label: 'X (Twitter)', color: '#FFFFFF' },
-              { icon: <MessageCircle size={24} />, label: 'WhatsApp', color: '#25D366' },
-              { icon: <Camera size={24} />, label: 'Instagram', color: '#E4405F' },
-              { icon: <Video size={24} />, label: 'Youtube', color: '#FF0000' },
-              { icon: <Send size={24} style={{ transform: 'rotate(-20deg)' }} />, label: 'Telegram', color: '#0088cc' }
+              { icon: <Share2 size={18} />, label: 'Facebook', color: '#1877F2' },
+              { icon: <Send size={18} />, label: 'X (Twitter)', color: '#FFFFFF' },
+              { icon: <MessageCircle size={18} />, label: 'WhatsApp', color: '#25D366' },
+              { icon: <Camera size={18} />, label: 'Instagram', color: '#E4405F' },
+              { icon: <Video size={18} />, label: 'Youtube', color: '#FF0000' },
+              { icon: <Send size={18} style={{ transform: 'rotate(-20deg)' }} />, label: 'Telegram', color: '#0088cc' }
             ].map((social, i) => (
               <a 
                 key={i}
@@ -120,9 +120,9 @@ const Footer = () => {
                   color: 'white',
                   transition: '0.3s',
                   background: 'rgba(255,255,255,0.1)',
-                  width: '50px',
-                  height: '50px',
-                  borderRadius: '15px',
+                  width: '35px',
+                  height: '35px',
+                  borderRadius: '10px',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
@@ -150,16 +150,16 @@ const Footer = () => {
       {/* Copyright */}
       <div style={{ 
         borderTop: '1px solid rgba(255,255,255,0.1)', 
-        paddingTop: '2rem', 
+        paddingTop: '1rem', 
         textAlign: 'center',
         display: 'flex',
         flexDirection: 'column',
-        gap: '8px'
+        gap: '4px'
       }}>
-        <p style={{ color: 'white', fontSize: '0.9rem', fontWeight: '700' }}>
+        <p style={{ color: 'white', fontSize: '0.8rem', fontWeight: '700' }}>
           &copy; {new Date().getFullYear()} My Health My Friend. All Rights Reserved.
         </p>
-        <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.8rem' }}>
+        <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.75rem' }}>
           Building a healthier future for Rwandan youth.
         </p>
       </div>

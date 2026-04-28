@@ -20,6 +20,7 @@ const PharmacyLocator = () => {
   const [selectedFacility, setSelectedFacility] = useState(null);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState('all');
+  const [searchQuery, setSearchQuery] = useState('');
 
   const { isLoaded } = useJsApiLoader({
     id: 'google-map-script',
@@ -153,7 +154,12 @@ const PharmacyLocator = () => {
               />
               
               {/* Facility Markers */}
-              {facilities.map((facility) => (
+              {facilities
+                .filter(f => 
+                  f.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                  (f.address && f.address.toLowerCase().includes(searchQuery.toLowerCase()))
+                )
+                .map((facility) => (
                 <Marker
                   key={facility.id}
                   position={{ lat: parseFloat(facility.latitude), lng: parseFloat(facility.longitude) }}
@@ -202,13 +208,24 @@ const PharmacyLocator = () => {
             <Search size={20} color="var(--text-muted)" />
             <input 
               type="text" 
-              placeholder="Search by name..." 
+              placeholder="Search by area or name (e.g. Kigali, Huye)..." 
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
               style={{ border: 'none', outline: 'none', width: '100%' }}
             />
           </div>
 
           <div style={{ overflowY: 'auto', maxHeight: '530px', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-            {facilities.length > 0 ? facilities.map((facility) => (
+            {facilities
+              .filter(f => 
+                f.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                (f.address && f.address.toLowerCase().includes(searchQuery.toLowerCase()))
+              ).length > 0 ? facilities
+              .filter(f => 
+                f.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                (f.address && f.address.toLowerCase().includes(searchQuery.toLowerCase()))
+              )
+              .map((facility) => (
               <motion.div
                 key={facility.id}
                 whileHover={{ scale: 1.02 }}

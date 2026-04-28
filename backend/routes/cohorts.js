@@ -95,4 +95,28 @@ router.post('/applications/:id/reject', async (req, res) => {
   }
 });
 
+// Delete cohort
+router.delete('/:id', async (req, res) => {
+  const { id } = req.params;
+  try {
+    await pool.query('DELETE FROM cohorts WHERE id = $1', [id]);
+    res.json({ message: 'Cohort deleted successfully' });
+  } catch (err) {
+    console.error('Error deleting cohort:', err);
+    res.status(500).json({ error: 'Database error' });
+  }
+});
+
+// Delete application
+router.delete('/applications/:id', async (req, res) => {
+  const { id } = req.params;
+  try {
+    await pool.query('DELETE FROM cohort_applications WHERE id = $1', [id]);
+    res.json({ message: 'Application deleted successfully' });
+  } catch (err) {
+    console.error('Error deleting application:', err);
+    res.status(500).json({ error: 'Database error' });
+  }
+});
+
 module.exports = router;
