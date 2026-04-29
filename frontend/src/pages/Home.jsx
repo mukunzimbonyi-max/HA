@@ -434,34 +434,37 @@ const Home = () => {
               style={{ 
                 position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, 
                 background: '#f8fafc',
-                zIndex: 3000, display: 'flex', justifyContent: 'center', alignItems: 'flex-start',
-                overflowY: 'auto'
+                zIndex: 3000, display: 'flex', justifyContent: 'center',
+                overflow: 'hidden'
               }}
             >
+              {/* Fixed Back Button */}
+              <button 
+                onClick={() => setSelectedUpdate(null)}
+                style={{ 
+                  position: 'fixed', top: '20px', left: '20px', border: 'none', 
+                  background: 'white', borderRadius: '50px', padding: '10px 20px', 
+                  cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px',
+                  transition: '0.3s', fontWeight: '600', color: '#1a202c',
+                  boxShadow: '0 4px 12px rgba(0,0,0,0.1)', zIndex: 3010
+                }}
+                onMouseEnter={(e) => e.target.style.background = '#f0f2f5'}
+                onMouseLeave={(e) => e.target.style.background = 'white'}
+              >
+                <ArrowLeft size={20} /> Back
+              </button>
+
               <motion.div 
                 initial={{ y: 50, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 exit={{ y: 50, opacity: 0 }}
                 transition={{ type: 'spring', damping: 25, stiffness: 200 }}
                 style={{ 
-                  background: 'white', width: '100%', maxWidth: '800px', minHeight: '100vh',
-                  padding: '6rem 2.5rem 3rem', position: 'relative', boxShadow: '0 0 30px rgba(0,0,0,0.05)',
-                  display: 'flex', flexDirection: 'column'
+                  background: 'white', width: '100%', maxWidth: '900px', height: '100vh',
+                  padding: '6rem 5vw 3rem 5vw', position: 'relative', boxShadow: '0 0 30px rgba(0,0,0,0.05)',
+                  display: 'flex', flexDirection: 'column', overflowY: 'auto'
                 }}
               >
-                <button 
-                  onClick={() => setSelectedUpdate(null)}
-                  style={{ 
-                    position: 'absolute', top: '30px', left: '30px', border: 'none', 
-                    background: '#f0f2f5', borderRadius: '50px', padding: '10px 20px', 
-                    cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px',
-                    transition: '0.3s', fontWeight: '600', color: '#1a202c'
-                  }}
-                  onMouseEnter={(e) => e.target.style.background = '#e2e8f0'}
-                  onMouseLeave={(e) => e.target.style.background = '#f0f2f5'}
-                >
-                  <ArrowLeft size={20} /> Back
-                </button>
 
                 <div style={{ flex: 1 }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '1rem' }}>
