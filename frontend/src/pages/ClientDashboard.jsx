@@ -185,7 +185,7 @@ const ClientDashboard = () => {
   return (
     <div style={{ minHeight: '100vh', background: 'var(--bg-color)', padding: '2rem' }}>
       {/* Header */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '2rem', flexWrap: 'wrap', gap: '1rem' }}>
         <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }}>
           <h1 style={{ fontSize: '2.5rem', fontWeight: '800', color: 'var(--text-dark)' }}>
             My Health Dashboard
@@ -229,7 +229,7 @@ const ClientDashboard = () => {
           boxShadow: '0 10px 30px rgba(0,0,0,0.1)'
         }}
       >
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '1rem' }}>
           <div>
             <h2 style={{ fontSize: '1.25rem', color: 'var(--text-muted)', marginBottom: '0.5rem' }}>
               Admission Status
@@ -245,7 +245,7 @@ const ClientDashboard = () => {
       </motion.div>
 
       {/* Tabs */}
-      <div style={{ display: 'flex', gap: '1rem', marginBottom: '2rem', borderBottom: '2px solid #e5e7eb' }}>
+      <div style={{ display: 'flex', gap: '1rem', marginBottom: '2rem', borderBottom: '2px solid #e5e7eb', overflowX: 'auto', whiteSpace: 'nowrap', paddingBottom: '0.5rem' }}>
         {['overview', 'documents', 'chat'].map((tab) => (
           <button
             key={tab}

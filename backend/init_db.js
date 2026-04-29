@@ -127,7 +127,7 @@ CREATE TABLE IF NOT EXISTS chats (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- 11. Client Admission Status
+-- 12. Client Admission Status
 CREATE TABLE IF NOT EXISTS admission_status (
     id SERIAL PRIMARY KEY,
     client_id INTEGER UNIQUE REFERENCES users(id) ON DELETE CASCADE,

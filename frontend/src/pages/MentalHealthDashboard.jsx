@@ -206,7 +206,7 @@ const MentalHealthDashboard = () => {
   return (
     <div style={{ minHeight: '100vh', background: 'var(--bg-color)', padding: '2rem' }}>
       {/* Header */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '2rem', flexWrap: 'wrap', gap: '1rem' }}>
         <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }}>
           <h1 style={{ fontSize: '2.5rem', fontWeight: '800', color: 'var(--text-dark)' }}>
             Mental Health Professional Dashboard
@@ -310,7 +310,7 @@ const MentalHealthDashboard = () => {
       </motion.div>
 
       {/* Tabs */}
-      <div style={{ display: 'flex', gap: '1rem', marginBottom: '2rem', borderBottom: '2px solid #e5e7eb' }}>
+      <div style={{ display: 'flex', gap: '1rem', marginBottom: '2rem', borderBottom: '2px solid #e5e7eb', overflowX: 'auto', whiteSpace: 'nowrap', paddingBottom: '0.5rem' }}>
         {['clients', 'pending', 'chat'].map((tab) => (
           <button
             key={tab}
@@ -389,7 +389,7 @@ const MentalHealthDashboard = () => {
                 }}
                 onHover={{ boxShadow: '0 8px 24px rgba(0,0,0,0.12)' }}
               >
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '1rem' }}>
                   <div style={{ flex: 1 }}>
                     <h3 style={{ fontSize: '1.125rem', fontWeight: '700', color: 'var(--text-dark)', marginBottom: '0.5rem' }}>
                       {client.username}
@@ -460,7 +460,7 @@ const MentalHealthDashboard = () => {
                   borderLeft: `4px solid ${getStatusColor(doc.status)}`
                 }}
               >
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '1rem' }}>
                   <div style={{ flex: 1 }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem' }}>
                       <h3 style={{ fontSize: '1rem', fontWeight: '700', color: 'var(--text-dark)' }}>

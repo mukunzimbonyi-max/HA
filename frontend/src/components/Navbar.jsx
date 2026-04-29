@@ -36,22 +36,38 @@ const Navbar = () => {
       top: 0,
       zIndex: 1000
     }}>
-      <div 
-        onClick={() => navigate('/home')}
-        role="button"
-        tabIndex={0}
-        onKeyDown={(e) => e.key === 'Enter' && navigate('/home')}
-        style={{ 
-          display: 'flex', 
-          alignItems: 'center', 
-          gap: '10px', 
-          cursor: 'pointer'
-        }}
-      >
-        <ShieldCheck size={32} color="var(--primary-blue)" />
-        <span style={{ fontSize: '1.4rem', fontWeight: '800', color: 'var(--primary-blue)', letterSpacing: '-0.5px' }}>
-          {t.brandName}
-        </span>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
+        <button 
+          className="mobile-menu-btn"
+          onClick={() => setIsMenuOpen(!isMenuOpen)}
+          style={{ 
+            background: isMenuOpen ? 'var(--primary-blue)' : '#f1f5f9', 
+            color: isMenuOpen ? 'white' : 'var(--text-dark)',
+            border: 'none', width: '42px', height: '42px', borderRadius: '12px',
+            alignItems: 'center', justifyContent: 'center', cursor: 'pointer',
+            transition: '0.3s'
+          }}
+        >
+          <Menu size={20} />
+        </button>
+
+        <div 
+          onClick={() => navigate('/home')}
+          role="button"
+          tabIndex={0}
+          onKeyDown={(e) => e.key === 'Enter' && navigate('/home')}
+          style={{ 
+            display: 'flex', 
+            alignItems: 'center', 
+            gap: '10px', 
+            cursor: 'pointer'
+          }}
+        >
+          <ShieldCheck size={32} color="var(--primary-blue)" />
+          <span className="brand-text" style={{ fontSize: '1.4rem', fontWeight: '800', color: 'var(--primary-blue)', letterSpacing: '-0.5px', whiteSpace: 'nowrap' }}>
+            {t.brandName}
+          </span>
+        </div>
       </div>
 
       <div className="desktop-nav-links" style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
@@ -203,88 +219,7 @@ const Navbar = () => {
         </div>
       </div>
 
-      {/* Mobile Menu Button & Settings wrapper */}
-      <div className="mobile-menu-btn" style={{ gap: '10px', alignItems: 'center' }}>
-        <div style={{ position: 'relative' }}>
-          <button 
-            onClick={() => setShowSettings(!showSettings)}
-            style={{ 
-              background: showSettings ? 'var(--primary-blue)' : '#f1f5f9', 
-              color: showSettings ? 'white' : 'var(--text-dark)',
-              border: 'none', width: '42px', height: '42px', borderRadius: '12px',
-              display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer',
-              transition: '0.3s'
-            }}
-          >
-            <Settings size={20} className={showSettings ? 'rotate-90' : ''} style={{ transition: '0.5s' }} />
-          </button>
-          <AnimatePresence>
-            {showSettings && (
-              <motion.div
-                initial={{ opacity: 0, y: 10, scale: 0.95 }}
-                animate={{ opacity: 1, y: 0, scale: 1 }}
-                exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                style={{
-                  position: 'absolute', top: '55px', right: 0, width: '220px',
-                  background: 'white', borderRadius: '20px', boxShadow: '0 10px 30px rgba(0,0,0,0.15)',
-                  padding: '1.2rem', border: '1px solid #f1f5f9', zIndex: 1001
-                }}
-              >
-                <div style={{ marginBottom: '1.2rem' }}>
-                  <p style={{ fontSize: '0.75rem', fontWeight: '800', color: 'var(--text-muted)', marginBottom: '10px', textTransform: 'uppercase' }}>Appearance</p>
-                  <button 
-                    onClick={toggleTheme}
-                    style={{ 
-                      width: '100%', display: 'flex', alignItems: 'center', gap: '10px', 
-                      background: '#f8fafc', border: 'none', padding: '10px', borderRadius: '10px',
-                      cursor: 'pointer', fontSize: '0.9rem', fontWeight: '600'
-                    }}
-                  >
-                    {theme === 'light' ? <Moon size={18} /> : <Sun size={18} />}
-                    {theme === 'light' ? 'Dark Mode' : 'Light Mode'}
-                  </button>
-                </div>
-                <div>
-                  <p style={{ fontSize: '0.75rem', fontWeight: '800', color: 'var(--text-muted)', marginBottom: '10px', textTransform: 'uppercase' }}>Language</p>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                    {languages.map(lang => (
-                      <button 
-                        key={lang.code}
-                        onClick={() => {
-                          changeLanguage(lang.code);
-                          setShowSettings(false);
-                        }}
-                        style={{ 
-                          width: '100%', textAlign: 'left', padding: '8px 10px', borderRadius: '8px',
-                          border: 'none', background: language === lang.code ? 'var(--primary-blue)' : 'transparent',
-                          color: language === lang.code ? 'white' : 'var(--text-dark)',
-                          fontSize: '0.85rem', fontWeight: language === lang.code ? '700' : '500',
-                          cursor: 'pointer', transition: '0.2s'
-                        }}
-                      >
-                        {lang.label}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </div>
-
-        <button 
-          onClick={() => setIsMenuOpen(!isMenuOpen)}
-          style={{ 
-            background: isMenuOpen ? 'var(--primary-blue)' : '#f1f5f9', 
-            color: isMenuOpen ? 'white' : 'var(--text-dark)',
-            border: 'none', width: '42px', height: '42px', borderRadius: '12px',
-            display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer',
-            transition: '0.3s'
-          }}
-        >
-          <Menu size={20} />
-        </button>
-      </div>
+      {/* Mobile Menu Button placeholder (removed, moved to the left) */}
 
       {/* Mobile Dropdown Menu */}
       <AnimatePresence>
@@ -344,6 +279,44 @@ const Navbar = () => {
                 <User size={18} /> Login
               </button>
             )}
+
+            {/* Settings nested inside mobile menu */}
+            <div style={{ marginTop: '1rem', paddingTop: '1rem', borderTop: '1px solid #e2e8f0' }}>
+              <p style={{ fontSize: '0.75rem', fontWeight: '800', color: 'var(--text-muted)', marginBottom: '10px', textTransform: 'uppercase' }}>Appearance</p>
+              <button 
+                onClick={toggleTheme}
+                style={{ 
+                  width: '100%', display: 'flex', alignItems: 'center', gap: '10px', 
+                  background: '#f8fafc', border: 'none', padding: '1rem', borderRadius: '12px',
+                  cursor: 'pointer', fontSize: '0.9rem', fontWeight: '600'
+                }}
+              >
+                {theme === 'light' ? <Moon size={18} /> : <Sun size={18} />}
+                {theme === 'light' ? 'Dark Mode' : 'Light Mode'}
+              </button>
+
+              <p style={{ fontSize: '0.75rem', fontWeight: '800', color: 'var(--text-muted)', marginTop: '1.5rem', marginBottom: '10px', textTransform: 'uppercase' }}>Language</p>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                {languages.map(lang => (
+                  <button 
+                    key={lang.code}
+                    onClick={() => {
+                      changeLanguage(lang.code);
+                      setIsMenuOpen(false);
+                    }}
+                    style={{ 
+                      width: '100%', textAlign: 'left', padding: '1rem', borderRadius: '12px',
+                      border: 'none', background: language === lang.code ? 'var(--primary-blue)' : 'transparent',
+                      color: language === lang.code ? 'white' : 'var(--text-dark)',
+                      fontSize: '0.9rem', fontWeight: language === lang.code ? '700' : '600',
+                      cursor: 'pointer', transition: '0.2s'
+                    }}
+                  >
+                    {lang.label}
+                  </button>
+                ))}
+              </div>
+            </div>
           </motion.div>
         )}
       </AnimatePresence>

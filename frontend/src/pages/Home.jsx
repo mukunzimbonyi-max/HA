@@ -202,15 +202,15 @@ const Home = () => {
 
       <main id="main-content" className="container" style={{ marginTop: '2rem' }}>
         {/* Welcome Hero */}
-        <section style={{ marginBottom: '3rem', position: 'relative' }}>
+        <section className="animated-hero-bg" style={{ marginBottom: '3rem', position: 'relative' }}>
           <motion.h1 
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
-            style={{ fontSize: '2.5rem', marginBottom: '0.5rem' }}
+            style={{ fontSize: '3rem', fontWeight: '800', marginBottom: '0.5rem', color: 'white', textShadow: '0 2px 10px rgba(0,0,0,0.3)' }}
           >
             {t.welcome}
           </motion.h1>
-          <p style={{ color: 'var(--text-muted)', fontSize: '1.2rem' }}>{t.subtitle}</p>
+          <p style={{ color: 'rgba(255,255,255,0.95)', fontSize: '1.25rem', fontWeight: '600', textShadow: '0 1px 5px rgba(0,0,0,0.3)' }}>{t.subtitle}</p>
         </section>
 
         <section 
@@ -234,22 +234,22 @@ const Home = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: index * 0.1 }}
-              whileHover={{ y: -5, boxShadow: 'var(--shadow-hover)' }}
+              whileHover={{ y: -5, boxShadow: '0 15px 35px rgba(0, 82, 204, 0.2)' }}
               onClick={() => handleActionClick(action.path)}
               style={{
                 background: 'var(--white)',
-                padding: '2rem',
-                borderRadius: '24px',
-                boxShadow: 'var(--shadow)',
+                padding: '2.5rem 2rem',
+                borderRadius: '20px',
+                boxShadow: '0 10px 30px rgba(0,0,0,0.04)',
                 cursor: 'pointer',
                 display: 'flex',
                 flexDirection: 'column',
                 alignItems: 'center',
                 justifyContent: 'center',
                 textAlign: 'center',
-                gap: '1rem',
-                borderBottom: `6px solid ${action.color}`,
-                aspectRatio: '1 / 1'
+                gap: '1.2rem',
+                border: '1px solid #edf2f7',
+                borderBottom: `4px solid ${action.color}`
               }}
             >
               <div style={{ 
@@ -286,7 +286,7 @@ const Home = () => {
             ) : videos.length > 0 ? videos.map((video) => (
               <motion.div 
                 key={video.id} 
-                whileHover={{ y: -10 }}
+                whileHover={{ y: -10, boxShadow: '0 20px 40px rgba(0, 82, 204, 0.25)' }}
                 style={{ 
                   background: 'var(--white)', 
                   borderRadius: '24px', 
@@ -392,7 +392,7 @@ const Home = () => {
             ) : updates.length > 0 ? updates.map((update) => (
               <motion.div 
                 key={update.id}
-                whileHover={{ y: -5 }}
+                whileHover={{ y: -5, boxShadow: '0 15px 30px rgba(0, 82, 204, 0.15)' }}
                 style={{ 
                   background: 'var(--white)', padding: '1.5rem', borderRadius: '20px', 
                   boxShadow: 'var(--shadow)', border: '1px solid #edf2f7',
@@ -688,48 +688,31 @@ const Home = () => {
             <Volume2 size={18} /> Read Page
           </button>
 
-          <AnimatePresence>
-            {!isAiOpen && (
-              <motion.div
-                initial={{ opacity: 0, x: 20 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: 20 }}
-                style={{
-                  background: 'var(--white)',
-                  padding: '0.8rem 1.2rem',
-                  borderRadius: '12px',
-                  boxShadow: 'var(--shadow)',
-                  fontWeight: '600',
-                  color: 'var(--primary-blue)',
-                  border: '1px solid #e2e8f0'
-                }}
-              >
-                {t.askAi}
-              </motion.div>
-            )}
-          </AnimatePresence>
-
           <motion.button
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.9 }}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
             onClick={() => setIsAiOpen(!isAiOpen)}
             aria-label={isAiOpen ? "Close AI Assistant" : "Open AI Assistant"}
             aria-expanded={isAiOpen}
             style={{
-              width: '65px',
-              height: '65px',
-              borderRadius: '50%',
+              height: '56px',
+              padding: '0 1.5rem',
+              borderRadius: '28px',
               background: 'var(--primary-blue)',
               color: 'white',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
+              gap: '10px',
               boxShadow: '0 8px 24px rgba(0, 82, 204, 0.4)',
               cursor: 'pointer',
-              border: 'none'
+              border: 'none',
+              fontWeight: '700',
+              fontSize: '1rem'
             }}
           >
-            {isAiOpen ? <X size={28} /> : <MessageSquare size={28} />}
+            {isAiOpen ? <X size={24} /> : <MessageSquare size={24} />}
+            {!isAiOpen ? t.askAi : "Close"}
           </motion.button>
         </div>
       </div>

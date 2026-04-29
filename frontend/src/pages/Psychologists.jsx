@@ -34,11 +34,16 @@ const Psychologists = () => {
   
   const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
   const [userId] = useState(() => {
-    const saved = localStorage.getItem('chat_user_id');
-    if (saved) return saved;
-    const newUser = 'user_' + Math.random().toString(36).substr(2, 9);
-    localStorage.setItem('chat_user_id', newUser);
-    return newUser;
+    const saved = localStorage.getItem('user');
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        return parsed.id;
+      } catch (e) {
+        return null;
+      }
+    }
+    return null;
   });
 
   useEffect(() => {
@@ -62,7 +67,7 @@ const Psychologists = () => {
     if (selectedPsych) {
       const fetchMessages = async () => {
         try {
-          const res = await fetch(`${apiUrl}/psychologists/chat/${userId}/${selectedPsych.id}`);
+          const res = await fetch(`${apiUrl}/mental-health/chats/${userId}/${selectedPsych.id}`);
           const data = await res.json();
           setMessages(data);
         } catch (err) {
@@ -77,6 +82,10 @@ const Psychologists = () => {
   }, [selectedPsych, userId, apiUrl]);
 
   const openChat = (psych) => {
+    if (!userId) {
+      navigate('/auth');
+      return;
+    }
     setSelectedPsych(psych);
   };
 
@@ -91,7 +100,7 @@ const Psychologists = () => {
     };
 
     try {
-      const res = await fetch(`${apiUrl}/psychologists/chat`, {
+      const res = await fetch(`${apiUrl}/mental-health/chats`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(msgData)
