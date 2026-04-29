@@ -14,7 +14,8 @@ import {
   X,
   VolumeX,
   ChevronRight,
-  Save
+  Save,
+  ArrowLeft
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useLanguage } from '../context/LanguageContext';
@@ -423,47 +424,46 @@ const Home = () => {
           </div>
         </section>
 
-        {/* Update Detail Side Drawer */}
+        {/* Update Detail Full Screen */}
         <AnimatePresence>
           {selectedUpdate && (
             <motion.div 
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              onClick={() => setSelectedUpdate(null)}
               style={{ 
                 position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, 
-                background: 'rgba(0,0,0,0.4)', backdropFilter: 'blur(4px)',
-                zIndex: 3000, display: 'flex', justifyContent: 'flex-end'
+                background: '#f8fafc',
+                zIndex: 3000, display: 'flex', justifyContent: 'center', alignItems: 'flex-start',
+                overflowY: 'auto'
               }}
             >
               <motion.div 
-                initial={{ x: '100%' }}
-                animate={{ x: 0 }}
-                exit={{ x: '100%' }}
+                initial={{ y: 50, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                exit={{ y: 50, opacity: 0 }}
                 transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-                onClick={(e) => e.stopPropagation()}
                 style={{ 
-                  background: 'white', width: '100%', maxWidth: '500px', height: '100vh',
-                  padding: '3rem 2.5rem', position: 'relative', boxShadow: '-10px 0 30px rgba(0,0,0,0.1)',
-                  display: 'flex', flexDirection: 'column', overflowY: 'auto'
+                  background: 'white', width: '100%', maxWidth: '800px', minHeight: '100vh',
+                  padding: '6rem 2.5rem 3rem', position: 'relative', boxShadow: '0 0 30px rgba(0,0,0,0.05)',
+                  display: 'flex', flexDirection: 'column'
                 }}
               >
                 <button 
                   onClick={() => setSelectedUpdate(null)}
                   style={{ 
-                    position: 'absolute', top: '30px', right: '30px', border: 'none', 
-                    background: '#f0f2f5', borderRadius: '50%', padding: '10px', 
-                    cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    transition: '0.3s'
+                    position: 'absolute', top: '30px', left: '30px', border: 'none', 
+                    background: '#f0f2f5', borderRadius: '50px', padding: '10px 20px', 
+                    cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px',
+                    transition: '0.3s', fontWeight: '600', color: '#1a202c'
                   }}
                   onMouseEnter={(e) => e.target.style.background = '#e2e8f0'}
                   onMouseLeave={(e) => e.target.style.background = '#f0f2f5'}
                 >
-                  <X size={24} />
+                  <ArrowLeft size={20} /> Back
                 </button>
 
-                <div style={{ marginTop: '2rem', flex: 1 }}>
+                <div style={{ flex: 1 }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '1rem' }}>
                     <span style={{ 
                       background: 'var(--primary-blue)', color: 'white', padding: '4px 12px', 
@@ -476,15 +476,15 @@ const Home = () => {
                     </span>
                   </div>
                   
-                  <h2 style={{ fontSize: '2.2rem', lineHeight: '1.2', marginBottom: '1.5rem', fontWeight: '800', color: 'var(--text-dark)' }}>
+                  <h2 style={{ fontSize: '2.5rem', lineHeight: '1.2', marginBottom: '2rem', fontWeight: '800', color: 'var(--text-dark)' }}>
                     {selectedUpdate.title}
                   </h2>
                   
                   <div 
                     className="rich-text-content"
                     style={{ 
-                      fontSize: '1.1rem', lineHeight: '1.8', color: '#4a5568', 
-                      marginBottom: '3rem', borderLeft: '4px solid #edf2f7', paddingLeft: '1.5rem'
+                      fontSize: '1.15rem', lineHeight: '1.8', color: '#4a5568', 
+                      marginBottom: '3rem'
                     }}
                     dangerouslySetInnerHTML={{ __html: selectedUpdate.content }}
                   />
@@ -504,7 +504,7 @@ const Home = () => {
                         target="_blank" 
                         rel="noopener noreferrer"
                         style={{ 
-                          display: 'block', padding: '1rem', background: 'var(--primary-blue)', 
+                          display: 'inline-block', padding: '1rem 3rem', background: 'var(--primary-blue)', 
                           color: 'white', textDecoration: 'none', fontWeight: '700', borderRadius: '12px',
                           boxShadow: '0 4px 12px rgba(0, 82, 204, 0.2)', transition: '0.3s'
                         }}
