@@ -10,6 +10,7 @@ import Psychologists from './pages/Psychologists';
 import Auth from './pages/Auth';
 import Cohorts from './pages/Cohorts';
 import Protection from './pages/Protection';
+import About from './pages/About';
 import { LanguageProvider } from './context/LanguageContext';
 import SkipLink from './components/SkipLink';
 import ThemeToggle from './components/ThemeToggle';
@@ -30,6 +31,7 @@ function App() {
         <Route path="/auth" element={<Auth />} />
         <Route path="/cohorts" element={<Cohorts />} />
         <Route path="/protection" element={<Protection />} />
+        <Route path="/about" element={<About />} />
         {/* Redirect any unknown routes to language selection */}
         <Route path="*" element={<Navigate to="/" />} />
       </Routes>

@@ -72,6 +72,17 @@ const Navbar = () => {
 
       <div className="desktop-nav-links" style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
         <button 
+          onClick={() => navigate('/about')}
+          style={{ 
+            background: 'transparent', border: 'none', padding: '0.6rem 1rem', 
+            borderRadius: '12px', cursor: 'pointer', color: 'var(--text-dark)',
+            fontWeight: '700', fontSize: '0.75rem', letterSpacing: '0.5px'
+          }}
+        >
+          ABOUT US
+        </button>
+
+        <button 
           onClick={() => navigate('/admin')}
           style={{ 
             background: '#f1f5f9', border: 'none', padding: '0.6rem 1rem', 
@@ -230,6 +241,16 @@ const Navbar = () => {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
           >
+            <button 
+              onClick={() => { navigate('/about'); setIsMenuOpen(false); }}
+              style={{ 
+                background: '#f1f5f9', border: 'none', padding: '1rem', 
+                borderRadius: '12px', cursor: 'pointer', color: 'var(--text-dark)',
+                fontWeight: '700', textAlign: 'left', marginBottom: '8px'
+              }}
+            >
+              About Us
+            </button>
             <button 
               onClick={() => { navigate('/admin'); setIsMenuOpen(false); }}
               style={{ 

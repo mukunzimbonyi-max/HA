@@ -30,6 +30,7 @@ const authRoutes = require('./routes/auth');
 const cohortRoutes = require('./routes/cohorts');
 const paymentRoutes = require('./routes/payments');
 const mentalHealthRoutes = require('./routes/mental-health');
+const contactRoutes = require('./routes/contact');
 
 // API Routes
 app.use('/api/facilities', facilityRoutes);
@@ -41,6 +42,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/cohorts', cohortRoutes);
 app.use('/api/payments', paymentRoutes);
 app.use('/api/mental-health', mentalHealthRoutes);
+app.use('/api/contact', contactRoutes);
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
