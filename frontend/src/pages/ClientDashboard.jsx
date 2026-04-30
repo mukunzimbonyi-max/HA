@@ -183,7 +183,7 @@ const ClientDashboard = () => {
   if (!user) return null;
 
   return (
-    <div style={{ minHeight: '100vh', background: 'var(--bg-color)', padding: '2rem' }}>
+    <div className="dashboard-container">
       {/* Header */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '2rem', flexWrap: 'wrap', gap: '1rem' }}>
         <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }}>
@@ -598,6 +598,7 @@ const ClientDashboard = () => {
               animate={{ scale: 1 }}
               exit={{ scale: 0.9 }}
               onClick={(e) => e.stopPropagation()}
+              className="responsive-modal-inner"
               style={{
                 background: 'var(--card-bg)',
                 borderRadius: '16px',

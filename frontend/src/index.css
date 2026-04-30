@@ -50,6 +50,12 @@ body {
   padding: 0 20px;
 }
 
+.dashboard-container {
+  min-height: 100vh;
+  background: var(--bg-gray);
+  padding: 2rem;
+}
+
 button {
   cursor: pointer;
   border: none;
@@ -77,6 +83,9 @@ button {
   /* Flex containers that should stack */
   .responsive-dashboard {
     flex-direction: column !important;
+  }
+  .dashboard-container {
+    padding: 1rem !important;
   }
   .responsive-dashboard > div:first-child {
     width: 100% !important;
