@@ -20,6 +20,7 @@ import {
   CheckCircle,
   XCircle,
   LogOut,
+  User,
   UserX,
   UserCheck,
   BarChart,

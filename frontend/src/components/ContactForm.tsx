@@ -1,4 +1,3 @@
-/// <reference types="vite/client" />
 import React, { useState } from 'react';
 import { Send, User, Mail, MessageSquare, Loader } from 'lucide-react';
 import { motion } from 'framer-motion';
