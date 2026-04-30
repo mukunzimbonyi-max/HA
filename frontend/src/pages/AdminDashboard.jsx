@@ -178,7 +178,7 @@ const AdminDashboard = () => {
         const res = await fetch(`${API_URL}/videos`);
         const data = await res.json();
         setVideos(data);
-      } else if (activeTab === 'updates' || activeTab === 'masterclasses') {
+      } else if (activeTab === 'updates') {
         const res = await fetch(`${API_URL}/updates`);
         const data = await res.json();
         setUpdates(data);
@@ -677,7 +677,7 @@ const AdminDashboard = () => {
                   </div>
                   <div>
                     <h3 style={{ fontSize: '1.1rem', color: 'var(--text-dark)' }}>{c.name}</h3>
-                    <p style={{ fontSize: '0.9rem', color: 'var(--text-muted)' }}>Status: {c.status.toUpperCase()} • Starts: {new Date(c.start_date).toLocaleDateString()}</p>
+                    <p style={{ fontSize: '0.9rem', color: 'var(--text-muted)' }}>Status: {(c.status || 'open').toUpperCase()} • Starts: {new Date(c.start_date).toLocaleDateString()}</p>
                   </div>
                 </div>
                 <div style={{ display: 'flex', gap: '10px' }}>
