@@ -76,13 +76,13 @@ const About = () => {
                   boxShadow: '0 10px 20px rgba(0,0,0,0.1)'
                 }}>
                   <img 
-                    src="/assets/cheretien.jpg" 
-                    alt="Munezero Cheretien"
-                    onError={(e) => { e.target.src = 'https://ui-avatars.com/api/?name=Munezero+Cheretien&background=0D8ABC&color=fff&size=150' }}
+                    src="/assets/chretien.jpg" 
+                    alt="Munezero Chretien"
+                    onError={(e) => { e.target.src = 'https://ui-avatars.com/api/?name=Munezero+Chretien&background=0D8ABC&color=fff&size=150' }}
                     style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                   />
                 </div>
-                <h3 style={{ fontSize: '1.4rem', color: 'var(--text-dark)', marginBottom: '0.5rem' }}>Munezero Cheretien</h3>
+                <h3 style={{ fontSize: '1.4rem', color: 'var(--text-dark)', marginBottom: '0.5rem' }}>Munezero Chretien</h3>
                 <span style={{ 
                   background: 'var(--primary-blue)', 
                   color: 'white', 
@@ -149,10 +149,10 @@ const About = () => {
             </div>
             
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '2rem', marginTop: '2rem' }}>
-              {/* Contact Cheretien */}
+              {/* Contact Chretien */}
               <ContactForm 
-                name="Cheretien" 
-                emailTo="munezerocheretien@gmail.com" 
+                name="Chretien" 
+                emailTo="munezerochretien@gmail.com" 
                 color="var(--primary-blue)" 
               />
               

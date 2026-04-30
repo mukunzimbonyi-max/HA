@@ -3,39 +3,35 @@ import { Send, User, Mail, MessageSquare, Loader } from 'lucide-react';
 import { motion } from 'framer-motion';
 import emailjs from '@emailjs/browser';
 
-interface ContactFormProps {
-  name: string;
-  emailTo: string;
-  color: string;
-}
 
-const ContactForm: React.FC<ContactFormProps> = ({ name, emailTo, color }) => {
+const ContactForm = ({ name, emailTo, color }) => {
   const [formData, setFormData] = useState({
     senderEmail: '',
     subject: '',
     message: ''
   });
-  const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
+  const [status, setStatus] = useState('idle');
   const [errorMessage, setErrorMessage] = useState('');
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setStatus('loading');
     setErrorMessage('');
 
     try {
-      const serviceId = import.meta.env.VITE_EMAILJS_SERVICE_ID || 'YOUR_SERVICE_ID';
-      const templateId = import.meta.env.VITE_EMAILJS_TEMPLATE_ID || 'YOUR_TEMPLATE_ID';
-      const publicKey = import.meta.env.VITE_EMAILJS_PUBLIC_KEY || 'YOUR_PUBLIC_KEY';
+      const serviceId = 'service_4apqlns';
+      const templateId = 'template_ooiwovl';
+      const publicKey = 'd8WlbgVwm_iYobtTB';
 
       const templateParams = {
         to_name: name,
-        to_email: emailTo, // Make sure your EmailJS template uses this variable to send to the correct person if needed, or route based on name.
+        to_email: emailTo,
         from_email: formData.senderEmail,
+        reply_to: formData.senderEmail,
         subject: formData.subject,
         message: formData.message,
       };
@@ -49,9 +45,9 @@ const ContactForm: React.FC<ContactFormProps> = ({ name, emailTo, color }) => {
         setStatus('idle');
       }, 3000);
     } catch (error) {
-      console.error('Error sending message:', error);
+      console.error('Error sending message via EmailJS:', error);
       setStatus('error');
-      setErrorMessage('Failed to send message. Please try again later.');
+      setErrorMessage('Failed to send message. EmailJS Error: ' + (error.text || error.message || 'Unknown error'));
     }
   };
 
