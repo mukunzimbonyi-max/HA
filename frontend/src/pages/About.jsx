@@ -9,8 +9,9 @@ const About = () => {
     <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
       <Navbar />
       
-      <main style={{ flex: 1, padding: '2rem' }} className="container">
+      <main style={{ flex: 1, padding: '2rem 0' }} className="container">
         <motion.div 
+          className="about-card-wrapper"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           style={{
@@ -52,6 +53,7 @@ const About = () => {
               
               {/* Founder 1 */}
               <motion.div 
+                className="founder-card"
                 whileHover={{ y: -10, boxShadow: '0 20px 40px rgba(0,0,0,0.1)' }}
                 style={{
                   background: '#f8fafc',
@@ -99,6 +101,7 @@ const About = () => {
 
               {/* Founder 2 */}
               <motion.div 
+                className="founder-card"
                 whileHover={{ y: -10, boxShadow: '0 20px 40px rgba(0,0,0,0.1)' }}
                 style={{
                   background: '#f8fafc',

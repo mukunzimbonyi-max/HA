@@ -124,7 +124,7 @@ const Navbar = () => {
             }}>
               {user.profile_picture ? (
                 <img 
-                  src={`${apiUrl.replace('/api', '')}${user.profile_picture}`} 
+                  src={user.profile_picture.startsWith('http') ? user.profile_picture : `${apiUrl.replace('/api', '')}${user.profile_picture}`} 
                   alt={user.username} 
                   style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
                 />

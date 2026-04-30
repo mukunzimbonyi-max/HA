@@ -14,6 +14,7 @@ CREATE TABLE IF NOT EXISTS users (
     password TEXT NOT NULL,
     role VARCHAR(50) DEFAULT 'client',
     profile_picture TEXT,
+    status VARCHAR(50) DEFAULT 'active',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 

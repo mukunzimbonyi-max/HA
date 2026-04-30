@@ -1,6 +1,8 @@
+/// <reference types="vite/client" />
 import React, { useState } from 'react';
 import { Send, User, Mail, MessageSquare, Loader } from 'lucide-react';
 import { motion } from 'framer-motion';
+import emailjs from '@emailjs/browser';
 
 interface ContactFormProps {
   name: string;
@@ -17,8 +19,6 @@ const ContactForm: React.FC<ContactFormProps> = ({ name, emailTo, color }) => {
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
   const [errorMessage, setErrorMessage] = useState('');
 
-  const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
-
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
@@ -29,23 +29,19 @@ const ContactForm: React.FC<ContactFormProps> = ({ name, emailTo, color }) => {
     setErrorMessage('');
 
     try {
-      const response = await fetch(`${apiUrl}/contact`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          to: emailTo,
-          from: formData.senderEmail,
-          subject: formData.subject,
-          text: formData.message,
-          founderName: name
-        }),
-      });
+      const serviceId = import.meta.env.VITE_EMAILJS_SERVICE_ID || 'YOUR_SERVICE_ID';
+      const templateId = import.meta.env.VITE_EMAILJS_TEMPLATE_ID || 'YOUR_TEMPLATE_ID';
+      const publicKey = import.meta.env.VITE_EMAILJS_PUBLIC_KEY || 'YOUR_PUBLIC_KEY';
 
-      if (!response.ok) {
-        throw new Error('Failed to send message');
-      }
+      const templateParams = {
+        to_name: name,
+        to_email: emailTo, // Make sure your EmailJS template uses this variable to send to the correct person if needed, or route based on name.
+        from_email: formData.senderEmail,
+        subject: formData.subject,
+        message: formData.message,
+      };
+
+      await emailjs.send(serviceId, templateId, templateParams, publicKey);
 
       setStatus('success');
       setFormData({ senderEmail: '', subject: '', message: '' });
@@ -62,6 +58,7 @@ const ContactForm: React.FC<ContactFormProps> = ({ name, emailTo, color }) => {
 
   return (
     <motion.div 
+      className="contact-form-card"
       whileHover={{ y: -5, boxShadow: '0 15px 30px rgba(0,0,0,0.1)' }}
       style={{
         background: 'white',

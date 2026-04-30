@@ -19,7 +19,11 @@ import {
   ShieldCheck,
   CheckCircle,
   XCircle,
-  LogOut
+  LogOut,
+  UserX,
+  UserCheck,
+  BarChart,
+  UserCog
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useLanguage } from '../context/LanguageContext';
@@ -40,6 +44,8 @@ const AdminDashboard = () => {
   const [videos, setVideos] = useState([]);
   const [updates, setUpdates] = useState([]);
   const [applications, setApplications] = useState([]);
+  const [usersData, setUsersData] = useState([]);
+  const [analyticsData, setAnalyticsData] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingId, setEditingId] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -183,6 +189,14 @@ const AdminDashboard = () => {
         const res = await fetch(`${API_URL}/cohorts/applications`);
         const data = await res.json();
         setApplications(data);
+      } else if (activeTab === 'users') {
+        const res = await fetch(`${API_URL}/admin/users`);
+        const data = await res.json();
+        setUsersData(data);
+      } else if (activeTab === 'analytics') {
+        const res = await fetch(`${API_URL}/admin/analytics`);
+        const data = await res.json();
+        setAnalyticsData(data);
       }
     } catch (err) {
       console.error('Fetch error:', err);
@@ -213,6 +227,37 @@ const AdminDashboard = () => {
       }
     } catch (err) {
       console.error('Error rejecting:', err);
+    }
+  };
+
+  const handleSuspendUser = async (id, currentStatus) => {
+    const newStatus = currentStatus === 'suspended' ? 'active' : 'suspended';
+    if (!window.confirm(`Are you sure you want to ${currentStatus === 'suspended' ? 'activate' : 'suspend'} this user?`)) return;
+    try {
+      const res = await fetch(`${API_URL}/admin/users/${id}/suspend`, { 
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status: newStatus })
+      });
+      if (res.ok) {
+        alert(`User successfully ${newStatus}!`);
+        fetchData();
+      }
+    } catch (err) {
+      console.error('Error suspending user:', err);
+    }
+  };
+
+  const handleDeleteUser = async (id) => {
+    if (!window.confirm('WARNING: This will permanently delete this user. Are you sure?')) return;
+    try {
+      const res = await fetch(`${API_URL}/admin/users/${id}`, { method: 'DELETE' });
+      if (res.ok) {
+        alert('User deleted.');
+        fetchData();
+      }
+    } catch (err) {
+      console.error('Error deleting user:', err);
     }
   };
 
@@ -454,6 +499,28 @@ const AdminDashboard = () => {
           >
             <ShieldCheck size={20} /> Applications
           </button>
+          <button 
+            onClick={() => setActiveTab('users')}
+            style={{
+              display: 'flex', alignItems: 'center', gap: '12px', padding: '1rem', borderRadius: '12px',
+              background: activeTab === 'users' ? 'var(--primary-blue)' : 'transparent',
+              color: activeTab === 'users' ? 'white' : 'var(--text-muted)',
+              border: 'none', cursor: 'pointer', fontWeight: '600', transition: '0.3s'
+            }}
+          >
+            <UserCog size={20} /> User Management
+          </button>
+          <button 
+            onClick={() => setActiveTab('analytics')}
+            style={{
+              display: 'flex', alignItems: 'center', gap: '12px', padding: '1rem', borderRadius: '12px',
+              background: activeTab === 'analytics' ? 'var(--primary-blue)' : 'transparent',
+              color: activeTab === 'analytics' ? 'white' : 'var(--text-muted)',
+              border: 'none', cursor: 'pointer', fontWeight: '600', transition: '0.3s'
+            }}
+          >
+            <BarChart size={20} /> Analytics
+          </button>
 
           {/* Logout button removed as per request */}
         </nav>
@@ -465,21 +532,25 @@ const AdminDashboard = () => {
           <div>
             <h1 style={{ fontSize: '2.2rem', color: 'var(--text-dark)' }}>
               {activeTab === 'facilities' ? 'GPS Health Directory' : 
-               activeTab === 'videos' ? 'Educational Library' : 'Masterclass Cohorts'}
+               activeTab === 'videos' ? 'Educational Library' : 
+               activeTab === 'users' ? 'User Management' :
+               activeTab === 'analytics' ? 'Platform Analytics' : 'Masterclass Cohorts'}
             </h1>
             <p style={{ color: 'var(--text-muted)', marginTop: '0.5rem' }}>Manage your platform content and services.</p>
           </div>
-          <button 
-            onClick={() => setIsModalOpen(true)}
-            style={{ 
-              background: 'var(--primary-blue)', color: 'white', border: 'none', 
-              padding: '0.8rem 1.5rem', borderRadius: '12px', fontWeight: '700',
-              display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer',
-              boxShadow: '0 4px 14px rgba(0, 82, 204, 0.3)'
-            }}
-          >
-            <Plus size={20} /> Add New {activeTab === 'facilities' ? 'Facility' : 'Item'}
-          </button>
+          {activeTab !== 'applications' && activeTab !== 'users' && activeTab !== 'analytics' && (
+            <button 
+              onClick={() => setIsModalOpen(true)}
+              style={{ 
+                background: 'var(--primary-blue)', color: 'white', border: 'none', 
+                padding: '0.8rem 1.5rem', borderRadius: '12px', fontWeight: '700',
+                display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer',
+                boxShadow: '0 4px 14px rgba(0, 82, 204, 0.3)'
+              }}
+            >
+              <Plus size={20} /> Add New {activeTab === 'facilities' ? 'Facility' : 'Item'}
+            </button>
+          )}
         </header>
 
         {loading ? (
@@ -695,6 +766,135 @@ const AdminDashboard = () => {
                     </motion.div>
                   ))
                 )}
+              </div>
+            )}
+
+            {activeTab === 'users' && (
+              <div style={{ display: 'grid', gap: '1rem' }}>
+                {usersData.length === 0 ? (
+                  <div style={{ textAlign: 'center', padding: '5rem', background: 'white', borderRadius: '24px' }}>
+                    <Users size={48} color="#e2e8f0" style={{ marginBottom: '1rem' }} />
+                    <h3>No users found</h3>
+                  </div>
+                ) : (
+                  usersData.map(u => (
+                    <motion.div 
+                      key={u.id}
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      style={{ 
+                        background: 'white', padding: '1.5rem', borderRadius: '20px', 
+                        boxShadow: '0 4px 15px rgba(0,0,0,0.05)', border: '1px solid #edf2f7',
+                        display: 'flex', justifyContent: 'space-between', alignItems: 'center'
+                      }}
+                    >
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem' }}>
+                        <div style={{ 
+                          width: '50px', height: '50px', borderRadius: '50%', overflow: 'hidden', 
+                          background: '#f0f4f8', display: 'flex', alignItems: 'center', justifyContent: 'center'
+                        }}>
+                          {u.profile_picture ? (
+                            <img src={u.profile_picture.startsWith('http') ? u.profile_picture : `${API_URL.replace('/api', '')}${u.profile_picture}`} alt={u.username} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                          ) : (
+                            <User size={24} color="var(--text-muted)" />
+                          )}
+                        </div>
+                        <div>
+                          <h3 style={{ fontSize: '1.1rem', color: 'var(--text-dark)', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                            {u.username} 
+                            <span style={{ 
+                              background: u.status === 'suspended' ? '#fff0f0' : '#e6fff0',
+                              color: u.status === 'suspended' ? '#ff5630' : '#00875a',
+                              padding: '2px 8px', borderRadius: '50px', fontSize: '0.7rem', textTransform: 'uppercase'
+                            }}>
+                              {u.status || 'active'}
+                            </span>
+                          </h3>
+                          <p style={{ fontSize: '0.9rem', color: 'var(--text-muted)' }}>{u.email} • Role: {u.role}</p>
+                          <p style={{ fontSize: '0.8rem', color: '#94a3b8' }}>Joined: {new Date(u.created_at).toLocaleDateString()}</p>
+                        </div>
+                      </div>
+                      
+                      <div style={{ display: 'flex', gap: '10px' }}>
+                        <button 
+                          onClick={() => handleSuspendUser(u.id, u.status || 'active')}
+                          style={{ 
+                            background: u.status === 'suspended' ? '#e6fff0' : '#fff0f0', 
+                            color: u.status === 'suspended' ? '#00875a' : '#ff5630', 
+                            border: 'none', padding: '10px 15px', borderRadius: '12px', fontWeight: '700', 
+                            cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px' 
+                          }}
+                        >
+                          {u.status === 'suspended' ? <UserCheck size={18} /> : <UserX size={18} />}
+                          {u.status === 'suspended' ? 'Activate' : 'Suspend'}
+                        </button>
+                        <button 
+                          onClick={() => handleDeleteUser(u.id)}
+                          style={{ 
+                            background: '#f8f9fa', color: '#ff5630', border: 'none', 
+                            padding: '10px', borderRadius: '12px', cursor: 'pointer', display: 'flex', alignItems: 'center' 
+                          }}
+                          title="Delete User"
+                        >
+                          <Trash2 size={18} />
+                        </button>
+                      </div>
+                    </motion.div>
+                  ))
+                )}
+              </div>
+            )}
+
+            {activeTab === 'analytics' && analyticsData && (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1.5rem' }}>
+                  <motion.div 
+                    initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
+                    style={{ background: 'white', padding: '2rem', borderRadius: '24px', boxShadow: '0 10px 30px rgba(0,0,0,0.05)', textAlign: 'center' }}
+                  >
+                    <h2 style={{ fontSize: '3rem', color: 'var(--primary-blue)', fontWeight: '800' }}>{analyticsData.totalUsers}</h2>
+                    <p style={{ color: 'var(--text-muted)', fontWeight: '600' }}>Total Registered Users</p>
+                  </motion.div>
+                  
+                  {analyticsData.roles.map((r, idx) => (
+                    <motion.div 
+                      key={idx}
+                      initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 * idx }}
+                      style={{ background: 'white', padding: '2rem', borderRadius: '24px', boxShadow: '0 10px 30px rgba(0,0,0,0.05)', textAlign: 'center' }}
+                    >
+                      <h2 style={{ fontSize: '3rem', color: '#36b37e', fontWeight: '800' }}>{r.count}</h2>
+                      <p style={{ color: 'var(--text-muted)', fontWeight: '600', textTransform: 'capitalize' }}>{r.role}s</p>
+                    </motion.div>
+                  ))}
+                </div>
+
+                <div style={{ background: 'white', padding: '2rem', borderRadius: '24px', boxShadow: '0 10px 30px rgba(0,0,0,0.05)' }}>
+                  <h3 style={{ fontSize: '1.2rem', marginBottom: '1.5rem', borderBottom: '1px solid #e2e8f0', paddingBottom: '1rem' }}>User Status Overview</h3>
+                  <div style={{ display: 'flex', gap: '2rem' }}>
+                    {analyticsData.statuses.map((s, idx) => (
+                      <div key={idx} style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                        <div style={{ width: '15px', height: '15px', borderRadius: '50%', background: s.status === 'suspended' ? '#ff5630' : '#00875a' }}></div>
+                        <span style={{ fontWeight: '600', textTransform: 'capitalize' }}>{s.status || 'active'}: {s.count}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <div style={{ background: 'white', padding: '2rem', borderRadius: '24px', boxShadow: '0 10px 30px rgba(0,0,0,0.05)' }}>
+                  <h3 style={{ fontSize: '1.2rem', marginBottom: '1.5rem', borderBottom: '1px solid #e2e8f0', paddingBottom: '1rem' }}>Recent Signups (Last 7 Days)</h3>
+                  {analyticsData.recentSignups.length === 0 ? (
+                    <p style={{ color: 'var(--text-muted)' }}>No recent signups in the last 7 days.</p>
+                  ) : (
+                    <div style={{ display: 'grid', gap: '1rem' }}>
+                      {analyticsData.recentSignups.map((s, idx) => (
+                        <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', padding: '1rem', background: '#f8fafc', borderRadius: '12px' }}>
+                          <span style={{ fontWeight: '600' }}>{new Date(s.date).toLocaleDateString()}</span>
+                          <span style={{ color: 'var(--primary-blue)', fontWeight: '800' }}>+{s.count} users</span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
               </div>
             )}
           </div>

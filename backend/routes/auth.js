@@ -50,11 +50,15 @@ router.post('/login', async (req, res) => {
   const { email, password } = req.body;
   try {
     const result = await db.query(
-      'SELECT id, username, email, role FROM users WHERE email = $1 AND password = $2',
+      'SELECT id, username, email, role, profile_picture, status FROM users WHERE email = $1 AND password = $2',
       [email, password]
     );
     if (result.rows.length > 0) {
-      res.json(result.rows[0]);
+      const user = result.rows[0];
+      if (user.status === 'suspended') {
+        return res.status(403).json({ error: 'Your account has been suspended by an administrator.' });
+      }
+      res.json(user);
     } else {
       res.status(401).json({ error: 'Invalid email or password' });
     }
